@@ -5,22 +5,22 @@
   --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  /* Color Palette - Modern Dark Slate & Vibrant Red Accents */
-  --bg-dark: #0f172a;
-  --bg-card: #1e293b;
-  --bg-card-hover: #334155;
-  --bg-input: #0f172a;
-  --border-color: #334155;
-  --border-focus: #ef4444;
+  /* Color Palette - Rich Crimson Red Backgrounds & Vibrant Red Accents */
+  --bg-dark: #1a0507;
+  --bg-card: #2a0c10;
+  --bg-card-hover: #3d1218;
+  --bg-input: #140305;
+  --border-color: #4a161e;
+  --border-focus: #ff3b56;
 
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --text-dim: #64748b;
+  --text-main: #fff1f2;
+  --text-muted: #fca5a5;
+  --text-dim: #f43f5e;
 
   /* Red Brand Accents */
-  --primary: #ef4444;
-  --primary-hover: #dc2626;
-  --primary-light: rgba(239, 68, 68, 0.15);
+  --primary: #ff2a4b;
+  --primary-hover: #e11d48;
+  --primary-light: rgba(255, 42, 75, 0.22);
 
   --success: #10b981;
   --success-bg: rgba(16, 185, 129, 0.15);
@@ -37,10 +37,10 @@
   --info: #0ea5e9;
   --info-bg: rgba(14, 165, 233, 0.15);
 
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.4);
-  --shadow-glow: 0 0 22px rgba(239, 68, 68, 0.35);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 22px rgba(255, 42, 75, 0.4);
 
   --radius-sm: 6px;
   --radius-md: 10px;
@@ -83,13 +83,13 @@ body {
 .app-container {
   display: flex;
   min-height: 100vh;
-  background: radial-gradient(circle at 10% 15%, rgba(185, 28, 28, 0.12) 0%, rgba(15, 23, 42, 1) 85%);
+  background: radial-gradient(circle at 15% 15%, #4a0e17 0%, #1a0507 85%);
 }
 
 /* Sidebar Styling */
 .sidebar {
   width: 260px;
-  background-color: rgba(30, 41, 59, 0.7);
+  background-color: rgba(42, 12, 16, 0.92);
   backdrop-filter: blur(12px);
   border-right: 1px solid var(--border-color);
   display: flex;
@@ -203,7 +203,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: rgba(15, 23, 42, 0.6);
+  background-color: rgba(26, 5, 7, 0.85);
   backdrop-filter: blur(8px);
   position: sticky;
   top: 0;
@@ -353,7 +353,7 @@ body {
 }
 
 .custom-table th {
-  background-color: #1e293b;
+  background-color: #22070a;
   padding: 0.85rem 1rem;
   color: var(--text-muted);
   font-weight: 600;

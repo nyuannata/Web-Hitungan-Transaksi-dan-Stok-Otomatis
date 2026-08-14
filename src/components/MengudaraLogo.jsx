@@ -4,7 +4,7 @@ import React from 'react';
  * MengudaraLogo Component
  * Renders the official wavy/psychedelic MENGUDARA SCREEN PRINTING logo
  */
-export const MengudaraLogo = ({ width = 280, height = 'auto', color = 'currentColor', className = '' }) => {
+export const MengudaraLogo = ({ width = 280, height = 'auto', color = '#000000', className = '' }) => {
   return (
     <div className={`mengudara-logo-wrapper ${className}`} style={{ display: 'inline-flex', alignItems: 'center' }}>
       <svg

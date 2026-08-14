@@ -35,12 +35,12 @@ export const Sidebar = ({ activeTab, setActiveTab }) => {
 
   return (
     <aside className="sidebar no-print">
-      <div className="sidebar-header" style={{ flexDirection: 'column', alignItems: 'flex-start', padding: '1.25rem 1rem 1rem 1rem', gap: '0.5rem', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-        <div style={{ width: '100%', display: 'flex', justifyContent: 'center', padding: '0.25rem 0' }}>
-          <MengudaraLogo width={210} color="#ef4444" />
+      <div className="sidebar-header" style={{ flexDirection: 'column', alignItems: 'center', padding: '1.25rem 1rem 1rem 1rem', gap: '0.75rem', borderBottom: '1px solid var(--border-color)' }}>
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '0.6rem 0.5rem', background: '#ffffff', borderRadius: '12px', boxShadow: '0 4px 14px rgba(0,0,0,0.35)' }}>
+          <MengudaraLogo width={200} color="#000000" />
         </div>
         <div style={{ width: '100%', textAlign: 'center' }}>
-          <div className="brand-subtitle" style={{ fontSize: '0.72rem', letterSpacing: '0.05em', color: '#94a3b8', fontWeight: 600 }}>TRANSAKSI & STOK OTOMATIS</div>
+          <div className="brand-subtitle" style={{ fontSize: '0.72rem', letterSpacing: '0.06em', color: '#fca5a5', fontWeight: 700, textTransform: 'uppercase' }}>TRANSAKSI & STOK OTOMATIS</div>
         </div>
       </div>
 

@@ -9,12 +9,13 @@ import {
   DollarSign,
   Phone,
   MapPin,
-  Shirt
+  Shirt,
+  Trash2
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
 export const OrderList = ({ isCompletedView, onOpenNewOrder, onOpenInvoice }) => {
-  const { data, payOrderBalance } = useApp();
+  const { data, payOrderBalance, deleteOrder } = useApp();
   const [searchTerm, setSearchTerm] = useState('');
   const [paymentModalOrder, setPaymentModalOrder] = useState(null);
   const [paymentAmountInput, setPaymentAmountInput] = useState('');
@@ -194,6 +195,13 @@ export const OrderList = ({ isCompletedView, onOpenNewOrder, onOpenInvoice }) =>
                             title="Cetak Nota Orderan"
                           >
                             <Printer size={14} /> Nota
+                          </button>
+                          <button
+                            className="btn btn-danger btn-sm"
+                            onClick={() => deleteOrder(order.id)}
+                            title="Hapus Orderan Ini"
+                          >
+                            <Trash2 size={14} /> Hapus
                           </button>
                         </div>
                       </td>

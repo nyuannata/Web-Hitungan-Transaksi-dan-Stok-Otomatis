@@ -78,6 +78,8 @@ export const Topbar = ({ title }) => {
     setSelectedMonth,
     exportDataJSON,
     importDataJSON,
+    clearFinancialData,
+    resetAllToZero,
     resetData,
     isCloudActive,
     firebaseConfig,
@@ -85,6 +87,7 @@ export const Topbar = ({ title }) => {
   } = useApp();
 
   const [showConfigModal, setShowConfigModal] = useState(false);
+  const [showResetModal, setShowResetModal] = useState(false);
   const [configForm, setConfigForm] = useState(firebaseConfig || {});
   const [showShowApiKey, setShowShowApiKey] = useState(false);
 
@@ -140,8 +143,8 @@ export const Topbar = ({ title }) => {
           <Settings size={14} /> Cloud DB
         </button>
 
-        <button className="btn btn-secondary btn-sm" onClick={resetData} title="Reset ke Data Demo">
-          <RotateCcw size={14} /> Reset
+        <button className="btn btn-secondary btn-sm" onClick={() => setShowResetModal(true)} title="Pilihan Reset & Kosongkan Data">
+          <RotateCcw size={14} /> Reset Data
         </button>
       </div>
 
@@ -241,6 +244,82 @@ export const Topbar = ({ title }) => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {/* Reset Options Modal */}
+      {showResetModal && (
+        <div className="modal-overlay">
+          <div className="modal-card">
+            <div className="modal-header">
+              <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <RotateCcw size={20} style={{ color: 'var(--primary)' }} /> Pilihan Reset & Kosongkan Data
+              </h3>
+              <button
+                style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
+                onClick={() => setShowResetModal(false)}
+              >
+                ✕
+              </button>
+            </div>
+            <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
+                Pilih aksi reset data sesuai kebutuhan usaha Anda:
+              </p>
+
+              <button
+                className="btn btn-secondary"
+                style={{ justifyContent: 'flex-start', padding: '1rem', textAlign: 'left', border: '1px solid rgba(248,113,113,0.4)', color: '#f87171' }}
+                onClick={() => {
+                  clearFinancialData();
+                  setShowResetModal(false);
+                }}
+              >
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: '0.95rem' }}>1. Kosongkan Pemasukan & Pengeluaran (Mulai dari Rp 0)</div>
+                  <div style={{ fontSize: '0.775rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
+                    Menghapus riwayat transaksi & pengeluaran agar hitungan saldo dan laporan laba-rugi dimulai bersih dari Rp 0.
+                  </div>
+                </div>
+              </button>
+
+              <button
+                className="btn btn-danger"
+                style={{ justifyContent: 'flex-start', padding: '1rem', textAlign: 'left' }}
+                onClick={() => {
+                  resetAllToZero();
+                  setShowResetModal(false);
+                }}
+              >
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: '0.95rem' }}>2. Kosongkan SELURUH Data Usaha (Mulai dari 0)</div>
+                  <div style={{ fontSize: '0.8rem', opacity: 0.9, marginTop: '0.2rem' }}>
+                    Menghapus seluruh transaksi, pengeluaran, sisa kain, dan mengosongkan stok kaos menjadi 0.
+                  </div>
+                </div>
+              </button>
+
+              <button
+                className="btn btn-secondary"
+                style={{ justifyContent: 'flex-start', padding: '1rem', textAlign: 'left' }}
+                onClick={() => {
+                  resetData();
+                  setShowResetModal(false);
+                }}
+              >
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: '0.95rem' }}>3. Muat Ulang Data Contoh / Demo Awal</div>
+                  <div style={{ fontSize: '0.775rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
+                    Mengisi kembali aplikasi dengan data transaksi contoh untuk keperluan simulasi.
+                  </div>
+                </div>
+              </button>
+            </div>
+            <div className="modal-footer">
+              <button className="btn btn-secondary" onClick={() => setShowResetModal(false)}>
+                Batal
+              </button>
+            </div>
           </div>
         </div>
       )}

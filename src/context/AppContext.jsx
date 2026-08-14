@@ -447,8 +447,76 @@ export const AppProvider = ({ children }) => {
     reader.readAsText(file);
   };
 
+  // Delete Expense
+  const deleteExpense = (id) => {
+    if (window.confirm('Apakah Anda yakin ingin menghapus pencatatan pengeluaran ini?')) {
+      updateDataState((prev) => ({
+        ...prev,
+        expenses: prev.expenses.filter((e) => e.id !== id)
+      }));
+    }
+  };
+
+  // Delete Manual Income
+  const deleteManualIncome = (id) => {
+    if (window.confirm('Apakah Anda yakin ingin menghapus pencatatan pemasukan ini?')) {
+      updateDataState((prev) => ({
+        ...prev,
+        manualIncomes: prev.manualIncomes.filter((i) => i.id !== id)
+      }));
+    }
+  };
+
+  // Delete Order
+  const deleteOrder = (id) => {
+    if (window.confirm('Apakah Anda yakin ingin menghapus orderan ini dari riwayat?')) {
+      updateDataState((prev) => ({
+        ...prev,
+        orders: prev.orders.filter((o) => o.id !== id)
+      }));
+    }
+  };
+
+  // Clear Financial Transactions to Rp 0
+  const clearFinancialData = () => {
+    if (window.confirm('Apakah Anda yakin ingin MENGOSONGKAN SEMUA Pemasukan & Pengeluaran agar hitungan dimulai dari Rp 0?')) {
+      updateDataState((prev) => ({
+        ...prev,
+        orders: [],
+        expenses: [],
+        manualIncomes: []
+      }));
+    }
+  };
+
+  // Reset ALL Data to Zero (Fresh Start)
+  const resetAllToZero = () => {
+    if (window.confirm('Apakah Anda yakin ingin MENGOSONGKAN SELURUH DATA (Transaksi, Stok, & Sisa Kain) menjadi 0 untuk memulai usaha dari awal?')) {
+      updateDataState((prev) => {
+        const cleanInventory = JSON.parse(JSON.stringify(prev.inventory || {}));
+        Object.keys(cleanInventory).forEach((brand) => {
+          Object.keys(cleanInventory[brand]).forEach((sleeve) => {
+            if (Array.isArray(cleanInventory[brand][sleeve])) {
+              cleanInventory[brand][sleeve].forEach((item) => {
+                item.sizes = { S: 0, M: 0, L: 0, XL: 0, XXL: 0 };
+              });
+            }
+          });
+        });
+
+        return {
+          orders: [],
+          expenses: [],
+          manualIncomes: [],
+          leftovers: [],
+          inventory: cleanInventory
+        };
+      });
+    }
+  };
+
   const resetData = () => {
-    if (window.confirm('Apakah Anda yakin ingin mengembalikan data ke data demo awal?')) {
+    if (window.confirm('Apakah Anda yakin ingin memuat kembali data demo contoh awal?')) {
       const init = getInitialData();
       localStorage.removeItem(STORAGE_KEY);
       updateDataState(init);
@@ -475,7 +543,10 @@ export const AppProvider = ({ children }) => {
         addOrder,
         payOrderBalance,
         addExpense,
+        deleteExpense,
         addManualIncome,
+        deleteManualIncome,
+        deleteOrder,
         updateStockVariant,
         addStockVariant,
         deleteStockVariant,
@@ -484,6 +555,8 @@ export const AppProvider = ({ children }) => {
         deleteLeftover,
         exportDataJSON,
         importDataJSON,
+        clearFinancialData,
+        resetAllToZero,
         resetData
       }}
     >

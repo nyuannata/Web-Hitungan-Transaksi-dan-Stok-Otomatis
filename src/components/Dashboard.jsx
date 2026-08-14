@@ -38,24 +38,30 @@ export const Dashboard = ({ onNavigate, onOpenNewOrder, onOpenNewExpense }) => {
   const completedOrders = data.orders.filter((o) => o.status === 'Selesai');
   const totalReceivables = activeOrders.reduce((acc, o) => acc + (o.remaining || 0), 0);
 
-  // Check low stock items
+  // Check low stock items safely
   const lowStockItems = [];
-  ['combed24s', 'stitchSupply'].forEach((brandKey) => {
-    ['pendek', 'panjang'].forEach((sleeveKey) => {
-      data.inventory[brandKey][sleeveKey].forEach((item) => {
-        const totalPcs = Object.values(item.sizes).reduce((a, b) => a + Number(b), 0);
-        if (totalPcs <= item.minAlert) {
-          lowStockItems.push({
-            brand: brandKey === 'combed24s' ? 'Combed 24S' : 'Stitch Supply',
-            sleeve: sleeveKey === 'pendek' ? 'Lengan Pendek' : 'Lengan Panjang',
-            color: item.color,
-            totalPcs,
-            minAlert: item.minAlert
-          });
-        }
-      });
+  if (data.inventory) {
+    Object.entries(data.inventory).forEach(([brandName, sleevesObj]) => {
+      if (sleevesObj && typeof sleevesObj === 'object') {
+        Object.entries(sleevesObj).forEach(([sleeveName, itemsArr]) => {
+          if (Array.isArray(itemsArr)) {
+            itemsArr.forEach((item) => {
+              const totalPcs = Object.values(item.sizes || {}).reduce((a, b) => a + Number(b), 0);
+              if (totalPcs <= (item.minAlert || 15)) {
+                lowStockItems.push({
+                  brand: brandName,
+                  sleeve: sleeveName,
+                  color: item.color,
+                  totalPcs,
+                  minAlert: item.minAlert || 15
+                });
+              }
+            });
+          }
+        });
+      }
     });
-  });
+  }
 
   const formatRupiah = (val) => {
     return new Intl.NumberFormat('id-ID', {

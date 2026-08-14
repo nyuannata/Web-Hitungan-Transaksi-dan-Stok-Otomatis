@@ -1,5 +1,6 @@
 import React from 'react';
-import { Printer, X, Shirt, CheckCircle } from 'lucide-react';
+import { Printer, X, CheckCircle } from 'lucide-react';
+import { MengudaraLogo } from '../MengudaraLogo';
 
 export const InvoiceModal = ({ order, onClose }) => {
   if (!order) return null;
@@ -40,25 +41,26 @@ export const InvoiceModal = ({ order, onClose }) => {
         <div className="modal-body" style={{ background: '#ffffff', color: '#0f172a', padding: '2.5rem' }}>
           <div className="printable-invoice">
             {/* Header Nota */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '2px solid #0f172a', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #0f172a', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
               <div>
-                <h1 style={{ fontSize: '1.75rem', fontWeight: 900, color: '#0f172a', margin: 0, letterSpacing: '-0.02em' }}>
-                  KONVEKSI & SABLON KAOS
-                </h1>
-                <p style={{ fontSize: '0.85rem', color: '#475569', margin: '0.2rem 0 0 0' }}>
-                  Layanan Produksi Kaos Combed 24S & Stitch Supply
+                <div style={{ marginBottom: '0.35rem' }}>
+                  <MengudaraLogo width={260} color="#0f172a" />
+                </div>
+                <p style={{ fontSize: '0.85rem', color: '#475569', margin: '0.2rem 0 0 0', fontWeight: 600 }}>
+                  Jasa Sablon Manual & Konveksi Kaos Custom
                 </p>
                 <p style={{ fontSize: '0.8rem', color: '#64748b', margin: 0 }}>
-                  Telp/WA: 0812-9988-7766 | Email: order@konveksikaos.com
+                  Telp/WA: 0812-9988-7766 | Email: order@mengudarascreenprinting.com
                 </p>
               </div>
 
               <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#4f46e5' }}>NOTA ORDERAN</div>
+                <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#dc2626' }}>NOTA ORDERAN</div>
                 <div style={{ fontSize: '0.9rem', fontWeight: 700, fontFamily: 'monospace' }}>No: {order.id}</div>
                 <div style={{ fontSize: '0.85rem', color: '#64748b' }}>Tanggal: {order.createdAt}</div>
               </div>
             </div>
+
 
             {/* Customer & Order Info */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem', background: '#f8fafc', padding: '1rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>

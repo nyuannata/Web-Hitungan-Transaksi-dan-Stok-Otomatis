@@ -15,6 +15,7 @@ import {
   Settings
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { MengudaraLogo } from './MengudaraLogo';
 
 export const Sidebar = ({ activeTab, setActiveTab }) => {
   const { data } = useApp();
@@ -34,15 +35,15 @@ export const Sidebar = ({ activeTab, setActiveTab }) => {
 
   return (
     <aside className="sidebar no-print">
-      <div className="sidebar-header">
-        <div className="logo-badge">
-          <Shirt size={24} />
+      <div className="sidebar-header" style={{ flexDirection: 'column', alignItems: 'flex-start', padding: '1.25rem 1rem 1rem 1rem', gap: '0.5rem', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'center', padding: '0.25rem 0' }}>
+          <MengudaraLogo width={210} color="#ef4444" />
         </div>
-        <div>
-          <div className="brand-title">KONVEKSI APPS</div>
-          <div className="brand-subtitle">Transaksi & Stok Otomatis</div>
+        <div style={{ width: '100%', textAlign: 'center' }}>
+          <div className="brand-subtitle" style={{ fontSize: '0.72rem', letterSpacing: '0.05em', color: '#94a3b8', fontWeight: 600 }}>TRANSAKSI & STOK OTOMATIS</div>
         </div>
       </div>
+
 
       <nav className="sidebar-nav">
         {navItems.map((item) => {

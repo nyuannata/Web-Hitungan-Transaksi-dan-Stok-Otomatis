@@ -1,0 +1,31 @@
+<svg viewBox="0 0 800 280" width="800" height="280" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="mengudara-wavy" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="turbulence" baseFrequency="0.015 0.03" numOctaves="2" result="warp" />
+      <feDisplacementMap xChannelSelector="R" yChannelSelector="G" scale="12" in="SourceGraphic" in2="warp" />
+    </filter>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Titan+One&amp;display=swap');
+      .logo-main {
+        font-family: 'Titan One', 'Impact', sans-serif;
+        font-size: 110px;
+        font-weight: 900;
+        letter-spacing: -2px;
+        fill: #000000;
+        filter: url(#mengudara-wavy);
+      }
+      .logo-sub {
+        font-family: 'Titan One', 'Impact', sans-serif;
+        font-size: 58px;
+        font-weight: 900;
+        letter-spacing: 2px;
+        fill: #000000;
+        filter: url(#mengudara-wavy);
+      }
+    </style>
+  </defs>
+  <g>
+    <text x="400" y="130" text-anchor="middle" class="logo-main">MENGUDARA</text>
+    <text x="400" y="235" text-anchor="middle" class="logo-sub">SCREEN PRINTING</text>
+  </g>
+</svg>

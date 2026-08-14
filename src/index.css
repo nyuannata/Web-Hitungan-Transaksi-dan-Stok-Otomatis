@@ -5,22 +5,22 @@
   --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  /* Color Palette - Modern Dark Slate & Vibrant Accents */
+  /* Color Palette - Modern Dark Slate & Vibrant Red Accents */
   --bg-dark: #0f172a;
   --bg-card: #1e293b;
   --bg-card-hover: #334155;
   --bg-input: #0f172a;
   --border-color: #334155;
-  --border-focus: #6366f1;
+  --border-focus: #ef4444;
 
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
   --text-dim: #64748b;
 
-  /* Brand Accents */
-  --primary: #6366f1;
-  --primary-hover: #4f46e5;
-  --primary-light: rgba(99, 102, 241, 0.15);
+  /* Red Brand Accents */
+  --primary: #ef4444;
+  --primary-hover: #dc2626;
+  --primary-light: rgba(239, 68, 68, 0.15);
 
   --success: #10b981;
   --success-bg: rgba(16, 185, 129, 0.15);
@@ -40,7 +40,7 @@
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.4);
-  --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.25);
+  --shadow-glow: 0 0 22px rgba(239, 68, 68, 0.35);
 
   --radius-sm: 6px;
   --radius-md: 10px;
@@ -83,7 +83,7 @@ body {
 .app-container {
   display: flex;
   min-height: 100vh;
-  background: radial-gradient(circle at 10% 20%, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 1) 90%);
+  background: radial-gradient(circle at 10% 15%, rgba(185, 28, 28, 0.12) 0%, rgba(15, 23, 42, 1) 85%);
 }
 
 /* Sidebar Styling */
@@ -110,7 +110,7 @@ body {
 }
 
 .logo-badge {
-  background: linear-gradient(135deg, #6366f1, #a855f7);
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
   width: 40px;
   height: 40px;
   border-radius: var(--radius-md);
@@ -169,8 +169,8 @@ body {
 
 .nav-item.active {
   background: var(--primary-light);
-  color: #818cf8;
-  border: 1px solid rgba(99, 102, 241, 0.3);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.35);
 }
 
 .nav-item-left {
@@ -293,7 +293,7 @@ body {
   justify-content: center;
 }
 
-.stat-icon.primary { background: var(--primary-light); color: #818cf8; }
+.stat-icon.primary { background: var(--primary-light); color: #f87171; }
 .stat-icon.success { background: var(--success-bg); color: #34d399; }
 .stat-icon.danger { background: var(--danger-bg); color: #f43f5e; }
 .stat-icon.warning { background: var(--warning-bg); color: #fbbf24; }
@@ -418,13 +418,13 @@ body {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  background: linear-gradient(135deg, #ef4444, #dc2626);
   color: white;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
 }
 .btn-primary:hover {
-  background: linear-gradient(135deg, #4f46e5, #4338ca);
-  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  box-shadow: 0 6px 18px rgba(220, 38, 38, 0.5);
 }
 
 .btn-secondary {
@@ -473,7 +473,7 @@ body {
 
 .form-control:focus {
   border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25);
 }
 
 .form-group {

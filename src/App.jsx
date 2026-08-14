@@ -33,7 +33,7 @@ function AppContent() {
       case 'customers':
         return 'Database Konsumen';
       default:
-        return 'Aplikasi Hitungan Otomatis Transaksi';
+        return 'MENGUDARA SCREEN PRINTING - Transaksi & Stok';
     }
   };
 

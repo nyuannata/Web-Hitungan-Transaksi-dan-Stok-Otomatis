@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Scissors, PlusCircle, Scale, Tag, Layers } from 'lucide-react';
+import { Scissors, PlusCircle, Scale, Tag, Layers, Trash2 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
 export const FabricLeftovers = () => {
-  const { data, addLeftover } = useApp();
+  const { data, addLeftover, deleteLeftover } = useApp();
   const [showModal, setShowModal] = useState(false);
 
   const [form, setForm] = useState({
@@ -92,6 +92,7 @@ export const FabricLeftovers = () => {
                   <th>Sumber Order ID</th>
                   <th>Status Penggunaan</th>
                   <th>Catatan / Lokasi Simpan</th>
+                  <th style={{ textAlign: 'center' }}>Aksi</th>
                 </tr>
               </thead>
               <tbody>
@@ -118,6 +119,15 @@ export const FabricLeftovers = () => {
                       </span>
                     </td>
                     <td style={{ color: 'var(--text-muted)' }}>{item.notes || '-'}</td>
+                    <td style={{ textAlign: 'center' }}>
+                      <button
+                        className="btn btn-danger btn-sm"
+                        title="Hapus Catatan Sisa Kain Ini"
+                        onClick={() => deleteLeftover(item.id)}
+                      >
+                        <Trash2 size={14} /> Hapus
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>

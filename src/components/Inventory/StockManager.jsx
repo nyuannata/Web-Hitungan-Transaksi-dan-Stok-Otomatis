@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Boxes, Shirt, PlusCircle, Edit3, Plus } from 'lucide-react';
+import { Boxes, Shirt, PlusCircle, Edit3, Plus, Trash2 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
 export const StockManager = () => {
-  const { data, updateStockVariant, addStockVariant } = useApp();
+  const { data, updateStockVariant, addStockVariant, deleteStockVariant, deleteFabricBrand } = useApp();
 
   // Get all unique fabric brands present in inventory
   const availableBrands = Object.keys(data.inventory || {});
@@ -121,7 +121,7 @@ export const StockManager = () => {
                   <th style={{ textAlign: 'center' }}>XXL</th>
                   <th style={{ textAlign: 'center' }}>Total Stok</th>
                   <th style={{ textAlign: 'center' }}>Status Stok</th>
-                  <th style={{ textAlign: 'center' }}>Aksi Edit</th>
+                  <th style={{ textAlign: 'center' }}>Aksi & Kelola</th>
                 </tr>
               </thead>
               <tbody>
@@ -157,18 +157,28 @@ export const StockManager = () => {
                         </span>
                       </td>
                       <td style={{ textAlign: 'center' }}>
-                        <button
-                          className="btn btn-secondary btn-sm"
-                          onClick={() =>
-                            setEditModalData({
-                              brand: selectedBrand,
-                              sleeve: sleeveTypeKey,
-                              variant: JSON.parse(JSON.stringify(item))
-                            })
-                          }
-                        >
-                          <Edit3 size={14} /> Update Stok
-                        </button>
+                        <div style={{ display: 'flex', justifyContent: 'center', gap: '0.35rem' }}>
+                          <button
+                            className="btn btn-secondary btn-sm"
+                            title="Update Stok"
+                            onClick={() =>
+                              setEditModalData({
+                                brand: selectedBrand,
+                                sleeve: sleeveTypeKey,
+                                variant: JSON.parse(JSON.stringify(item))
+                              })
+                            }
+                          >
+                            <Edit3 size={14} /> Update
+                          </button>
+                          <button
+                            className="btn btn-danger btn-sm"
+                            title="Hapus Stok Warna Ini"
+                            onClick={() => deleteStockVariant(selectedBrand, sleeveTypeKey, item.id)}
+                          >
+                            <Trash2 size={14} /> Hapus
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -197,17 +207,30 @@ export const StockManager = () => {
       </div>
 
       {/* Dynamic Tabs for All Available Brands */}
-      <div className="tab-group" style={{ overflowX: 'auto', flexWrap: 'nowrap' }}>
-        {availableBrands.map((brandName) => (
+      <div className="tab-group" style={{ overflowX: 'auto', flexWrap: 'nowrap', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          {availableBrands.map((brandName) => (
+            <button
+              key={brandName}
+              className={`tab-btn ${selectedBrand === brandName ? 'active' : ''}`}
+              onClick={() => setSelectedBrand(brandName)}
+              style={{ whiteSpace: 'nowrap' }}
+            >
+              <Boxes size={16} inline /> STOK {brandName.toUpperCase()}
+            </button>
+          ))}
+        </div>
+
+        {selectedBrand && availableBrands.length > 0 && (
           <button
-            key={brandName}
-            className={`tab-btn ${selectedBrand === brandName ? 'active' : ''}`}
-            onClick={() => setSelectedBrand(brandName)}
-            style={{ whiteSpace: 'nowrap' }}
+            className="btn btn-secondary btn-sm"
+            style={{ color: '#f87171', border: '1px solid rgba(248,113,113,0.3)', marginBottom: '0.5rem' }}
+            onClick={() => deleteFabricBrand(selectedBrand)}
+            title={`Hapus Seluruh Merek ${selectedBrand}`}
           >
-            <Boxes size={16} inline /> STOK {brandName.toUpperCase()}
+            <Trash2 size={14} /> Hapus Merek {selectedBrand}
           </button>
-        ))}
+        )}
       </div>
 
       {/* Dynamic Tables for Models under Active Brand */}

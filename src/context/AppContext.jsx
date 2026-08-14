@@ -381,6 +381,42 @@ export const AppProvider = ({ children }) => {
     }));
   };
 
+  // Delete Stock Variant
+  const deleteStockVariant = (brand, sleeve, variantId) => {
+    if (window.confirm('Apakah Anda yakin ingin menghapus variasi warna stok ini?')) {
+      updateDataState((prev) => {
+        const newInventory = JSON.parse(JSON.stringify(prev.inventory));
+        if (newInventory[brand] && newInventory[brand][sleeve]) {
+          newInventory[brand][sleeve] = newInventory[brand][sleeve].filter(
+            (item) => item.id !== variantId
+          );
+        }
+        return { ...prev, inventory: newInventory };
+      });
+    }
+  };
+
+  // Delete Entire Fabric Brand
+  const deleteFabricBrand = (brand) => {
+    if (window.confirm(`Apakah Anda yakin ingin menghapus SELURUH merek kain "${brand}" dan semua stok di dalamnya?`)) {
+      updateDataState((prev) => {
+        const newInventory = JSON.parse(JSON.stringify(prev.inventory));
+        delete newInventory[brand];
+        return { ...prev, inventory: newInventory };
+      });
+    }
+  };
+
+  // Delete Leftover Fabric
+  const deleteLeftover = (id) => {
+    if (window.confirm('Apakah Anda yakin ingin menghapus pencatatan sisa kain ini?')) {
+      updateDataState((prev) => ({
+        ...prev,
+        leftovers: prev.leftovers.filter((item) => item.id !== id)
+      }));
+    }
+  };
+
   // Export & Import
   const exportDataJSON = () => {
     const jsonStr = JSON.stringify(data, null, 2);
@@ -442,7 +478,10 @@ export const AppProvider = ({ children }) => {
         addManualIncome,
         updateStockVariant,
         addStockVariant,
+        deleteStockVariant,
+        deleteFabricBrand,
         addLeftover,
+        deleteLeftover,
         exportDataJSON,
         importDataJSON,
         resetData

@@ -137,9 +137,9 @@ export const AppProvider = ({ children }) => {
     return `${yyyy}-${mm}`;
   });
 
-  // Check if Firebase config is configured with a real project ID
+  // Check if Firebase config is configured with a real project ID and API key
   useEffect(() => {
-    if (firebaseConfig && firebaseConfig.projectId && !firebaseConfig.projectId.includes('demo')) {
+    if (firebaseConfig && firebaseConfig.projectId && firebaseConfig.apiKey) {
       setIsCloudActive(true);
     } else {
       setIsCloudActive(false);

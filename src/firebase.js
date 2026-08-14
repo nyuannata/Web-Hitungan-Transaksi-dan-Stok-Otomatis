@@ -1,14 +1,15 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore, doc, setDoc, onSnapshot } from 'firebase/firestore';
 
-// Default Firebase Configuration (Can be customized via UI settings)
+// Default Firebase Configuration (Customized for Mengudara Screen Printing)
 const DEFAULT_FIREBASE_CONFIG = {
-  apiKey: '',
-  authDomain: '',
-  projectId: '',
-  storageBucket: '',
-  messagingSenderId: '',
-  appId: ''
+  apiKey: "AIzaSyDHdtpvlTbJFF3Yab63aQwjGFNLOatF_CA",
+  authDomain: "mengudara-screen-printing.firebaseapp.com",
+  projectId: "mengudara-screen-printing",
+  storageBucket: "mengudara-screen-printing.firebasestorage.app",
+  messagingSenderId: "435794749131",
+  appId: "1:435794749131:web:edd0a4c0561f62e975dd4e",
+  measurementId: "G-55LEC5Z3FP"
 };
 
 const FIREBASE_CONFIG_KEY = 'WEB_TRANSAKSI_FIREBASE_CONFIG_V1';
@@ -17,7 +18,10 @@ export const getSavedFirebaseConfig = () => {
   const saved = localStorage.getItem(FIREBASE_CONFIG_KEY);
   if (saved) {
     try {
-      return JSON.parse(saved);
+      const parsed = JSON.parse(saved);
+      if (parsed && parsed.projectId && parsed.apiKey) {
+        return parsed;
+      }
     } catch (e) {
       console.error('Failed to parse saved Firebase config', e);
     }
@@ -34,7 +38,7 @@ let db = null;
 
 try {
   const config = getSavedFirebaseConfig();
-  if (config && config.projectId && !config.projectId.includes('demo')) {
+  if (config && config.projectId && config.apiKey) {
     app = initializeApp(config);
     db = getFirestore(app);
   }

@@ -12,7 +12,9 @@ import {
   RotateCcw,
   Shirt,
   Cloud,
-  Settings
+  Settings,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { MengudaraLogo } from './MengudaraLogo';
@@ -84,6 +86,7 @@ export const Topbar = ({ title }) => {
 
   const [showConfigModal, setShowConfigModal] = useState(false);
   const [configForm, setConfigForm] = useState(firebaseConfig || {});
+  const [showShowApiKey, setShowShowApiKey] = useState(false);
 
   const handleFileImport = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -160,7 +163,7 @@ export const Topbar = ({ title }) => {
             <form onSubmit={handleSaveFirebaseKeys}>
               <div className="modal-body">
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
-                  Hubungkan ke proyek Firebase Cloud Anda gratis agar **semua HP, Laptop, dan Tablet terhubung & tersinkronisasi otomatis secara real-time**:
+                  Fitur ini opsional. Hubungkan ke proyek Firebase Cloud Anda gratis agar **semua HP, Laptop, dan Tablet terhubung & tersinkronisasi otomatis secara real-time**:
                 </p>
 
                 <div className="form-group">
@@ -168,7 +171,7 @@ export const Topbar = ({ title }) => {
                   <input
                     type="text"
                     className="form-control"
-                    placeholder="Contoh: konveksi-usahaku-123"
+                    placeholder="Contoh: mengudara-konveksi-123"
                     value={configForm.projectId || ''}
                     onChange={(e) => setConfigForm({ ...configForm, projectId: e.target.value })}
                     required
@@ -177,14 +180,32 @@ export const Topbar = ({ title }) => {
 
                 <div className="form-group">
                   <label className="form-label">API Key Firebase *</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Contoh: AIzaSyD..."
-                    value={configForm.apiKey || ''}
-                    onChange={(e) => setConfigForm({ ...configForm, apiKey: e.target.value })}
-                    required
-                  />
+                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                    <input
+                      type={showShowApiKey ? 'text' : 'password'}
+                      className="form-control"
+                      style={{ paddingRight: '2.5rem' }}
+                      placeholder="Masukkan AIzaSyD..."
+                      value={configForm.apiKey || ''}
+                      onChange={(e) => setConfigForm({ ...configForm, apiKey: e.target.value })}
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowShowApiKey(!showShowApiKey)}
+                      style={{
+                        position: 'absolute',
+                        right: '0.75rem',
+                        background: 'none',
+                        border: 'none',
+                        color: 'var(--text-muted)',
+                        cursor: 'pointer'
+                      }}
+                      title={showShowApiKey ? 'Sembunyikan API Key' : 'Tampilkan API Key'}
+                    >
+                      {showShowApiKey ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
                 </div>
 
                 <div className="form-row">

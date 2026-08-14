@@ -3,12 +3,12 @@ import { getFirestore, doc, setDoc, onSnapshot } from 'firebase/firestore';
 
 // Default Firebase Configuration (Can be customized via UI settings)
 const DEFAULT_FIREBASE_CONFIG = {
-  apiKey: "AIzaSyDemoKeyForKonveksiApps2026",
-  authDomain: "konveksi-transaksi-stok.firebaseapp.com",
-  projectId: "konveksi-transaksi-stok",
-  storageBucket: "konveksi-transaksi-stok.appspot.com",
-  messagingSenderId: "123456789012",
-  appId: "1:123456789012:web:demo123456789"
+  apiKey: '',
+  authDomain: '',
+  projectId: '',
+  storageBucket: '',
+  messagingSenderId: '',
+  appId: ''
 };
 
 const FIREBASE_CONFIG_KEY = 'WEB_TRANSAKSI_FIREBASE_CONFIG_V1';

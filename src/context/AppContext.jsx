@@ -1,4 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import {
+  pushToCloudFirestore,
+  subscribeToCloudFirestore,
+  getSavedFirebaseConfig,
+  saveFirebaseConfig
+} from '../firebase';
 
 const AppContext = createContext();
 
@@ -121,6 +127,9 @@ const getInitialData = () => {
 
 export const AppProvider = ({ children }) => {
   const [data, setData] = useState(getInitialData);
+  const [isCloudActive, setIsCloudActive] = useState(false);
+  const [firebaseConfig, setFirebaseConfigState] = useState(getSavedFirebaseConfig);
+
   const [selectedMonth, setSelectedMonth] = useState(() => {
     const today = new Date();
     const yyyy = today.getFullYear();
@@ -128,12 +137,41 @@ export const AppProvider = ({ children }) => {
     return `${yyyy}-${mm}`;
   });
 
-  // Save to LocalStorage whenever data changes
+  // Check if Firebase config is configured with a real project ID
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  }, [data]);
+    if (firebaseConfig && firebaseConfig.projectId && !firebaseConfig.projectId.includes('demo')) {
+      setIsCloudActive(true);
+    } else {
+      setIsCloudActive(false);
+    }
+  }, [firebaseConfig]);
 
-  // Normalize sleeve names for backwards compatibility
+  // Subscribe to real-time Cloud Firestore updates
+  useEffect(() => {
+    const unsubscribe = subscribeToCloudFirestore((cloudData) => {
+      if (cloudData) {
+        setData(cloudData);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(cloudData));
+      }
+    });
+
+    return () => unsubscribe();
+  }, [isCloudActive]);
+
+  // Save to LocalStorage & push to Cloud when data changes locally
+  const updateDataState = (updater) => {
+    setData((prev) => {
+      const nextData = typeof updater === 'function' ? updater(prev) : updater;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(nextData));
+
+      if (isCloudActive) {
+        pushToCloudFirestore(nextData);
+      }
+
+      return nextData;
+    });
+  };
+
   const normalizeSleeve = (s) => {
     if (!s) return 'Lengan Pendek';
     if (s === 'Pendek') return 'Lengan Pendek';
@@ -144,7 +182,7 @@ export const AppProvider = ({ children }) => {
   // Helper to deduct inventory based on order details
   const deductInventory = (fabricBrand, sleeveTypeInput, colorName, sizesObj) => {
     const sleeveType = normalizeSleeve(sleeveTypeInput);
-    setData((prev) => {
+    updateDataState((prev) => {
       const newInventory = JSON.parse(JSON.stringify(prev.inventory));
       if (newInventory[fabricBrand] && newInventory[fabricBrand][sleeveType]) {
         const items = newInventory[fabricBrand][sleeveType];
@@ -207,10 +245,9 @@ export const AppProvider = ({ children }) => {
       notes: orderInput.notes || ''
     };
 
-    // Deduct stock automatically
     deductInventory(orderInput.fabricBrand, normalizedSleeve, orderInput.color, orderInput.sizes);
 
-    setData((prev) => ({
+    updateDataState((prev) => ({
       ...prev,
       orders: [newOrder, ...prev.orders]
     }));
@@ -223,7 +260,7 @@ export const AppProvider = ({ children }) => {
     const todayStr = new Date().toISOString().split('T')[0];
     const amount = Number(paymentAmount) || 0;
 
-    setData((prev) => {
+    updateDataState((prev) => {
       const updatedOrders = prev.orders.map((ord) => {
         if (ord.id === orderId) {
           const newRemaining = Math.max(0, ord.remaining - amount);
@@ -260,7 +297,7 @@ export const AppProvider = ({ children }) => {
       description: expenseInput.description || ''
     };
 
-    setData((prev) => ({
+    updateDataState((prev) => ({
       ...prev,
       expenses: [newExp, ...prev.expenses]
     }));
@@ -279,7 +316,7 @@ export const AppProvider = ({ children }) => {
       description: incomeInput.description || ''
     };
 
-    setData((prev) => ({
+    updateDataState((prev) => ({
       ...prev,
       manualIncomes: [newInc, ...prev.manualIncomes]
     }));
@@ -287,7 +324,7 @@ export const AppProvider = ({ children }) => {
 
   // Update Inventory Stock (Restok or Adjust)
   const updateStockVariant = (brand, sleeve, variantId, newSizes) => {
-    setData((prev) => {
+    updateDataState((prev) => {
       const newInventory = JSON.parse(JSON.stringify(prev.inventory));
       if (newInventory[brand] && newInventory[brand][sleeve]) {
         const idx = newInventory[brand][sleeve].findIndex((i) => i.id === variantId);
@@ -299,20 +336,17 @@ export const AppProvider = ({ children }) => {
     });
   };
 
-  // Add New Color Variant / Dynamic Fabric Brand & Model
+  // Add New Color Variant
   const addStockVariant = (brandName, sleeveNameInput, colorName, sizesObj, minAlert = 10) => {
     const sleeveName = normalizeSleeve(sleeveNameInput);
     const id = `var-${Date.now().toString().slice(-6)}`;
 
-    setData((prev) => {
+    updateDataState((prev) => {
       const newInventory = JSON.parse(JSON.stringify(prev.inventory));
 
-      // Ensure brand exists
       if (!newInventory[brandName]) {
         newInventory[brandName] = {};
       }
-
-      // Ensure sleeve/model exists
       if (!newInventory[brandName][sleeveName]) {
         newInventory[brandName][sleeveName] = [];
       }
@@ -341,7 +375,7 @@ export const AppProvider = ({ children }) => {
       notes: leftoverInput.notes || ''
     };
 
-    setData((prev) => ({
+    updateDataState((prev) => ({
       ...prev,
       leftovers: [newLeftover, ...prev.leftovers]
     }));
@@ -365,7 +399,7 @@ export const AppProvider = ({ children }) => {
       try {
         const parsed = JSON.parse(e.target.result);
         if (parsed.orders && parsed.inventory) {
-          setData(parsed);
+          updateDataState(parsed);
           alert('Data berhasil di-impor!');
         } else {
           alert('Format berkas JSON tidak valid.');
@@ -381,8 +415,16 @@ export const AppProvider = ({ children }) => {
     if (window.confirm('Apakah Anda yakin ingin mengembalikan data ke data demo awal?')) {
       const init = getInitialData();
       localStorage.removeItem(STORAGE_KEY);
-      setData(init);
+      updateDataState(init);
     }
+  };
+
+  // Update Cloud Firebase Config
+  const updateFirebaseConfigKeys = (newConfig) => {
+    saveFirebaseConfig(newConfig);
+    setFirebaseConfigState(newConfig);
+    alert('Pengaturan Cloud Firebase berhasil disimpan! Silakan muat ulang halaman.');
+    window.location.reload();
   };
 
   return (
@@ -391,6 +433,9 @@ export const AppProvider = ({ children }) => {
         data,
         selectedMonth,
         setSelectedMonth,
+        isCloudActive,
+        firebaseConfig,
+        updateFirebaseConfigKeys,
         addOrder,
         payOrderBalance,
         addExpense,

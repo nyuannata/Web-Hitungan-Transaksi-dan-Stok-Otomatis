@@ -259,10 +259,12 @@ export const AppProvider = ({ children }) => {
   const payOrderBalance = (orderId, paymentAmount) => {
     const todayStr = new Date().toISOString().split('T')[0];
     const amount = Number(paymentAmount) || 0;
+    let targetCustomerName = '';
 
     updateDataState((prev) => {
       const updatedOrders = prev.orders.map((ord) => {
         if (ord.id === orderId) {
+          targetCustomerName = ord.customerName;
           const newRemaining = Math.max(0, ord.remaining - amount);
           const newDp = ord.dp + amount;
           const newStatus = newRemaining === 0 ? 'Selesai' : 'DP';
@@ -277,9 +279,18 @@ export const AppProvider = ({ children }) => {
         return ord;
       });
 
+      const newIncomeEntry = {
+        id: `INC-PEL-${orderId}-${Date.now().toString().slice(-4)}`,
+        date: todayStr,
+        category: 'Pelunasan Order',
+        amount: amount,
+        description: `Pelunasan Order #${orderId} - ${targetCustomerName}`
+      };
+
       return {
         ...prev,
-        orders: updatedOrders
+        orders: updatedOrders,
+        manualIncomes: [newIncomeEntry, ...(prev.manualIncomes || [])]
       };
     });
   };

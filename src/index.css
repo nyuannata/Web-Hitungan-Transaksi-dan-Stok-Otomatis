@@ -498,14 +498,19 @@ body {
 /* Modals */
 .modal-overlay {
   position: fixed;
-  inset: 0;
-  background-color: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(6px);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(10, 2, 4, 0.85);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 100;
-  padding: 1.5rem;
+  z-index: 99999;
+  padding: 1rem;
   overflow-y: auto;
 }
 
@@ -514,12 +519,14 @@ body {
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   width: 100%;
-  max-width: 650px;
-  max-height: 90vh;
+  max-width: 600px;
+  max-height: 85vh;
+  margin: auto;
   display: flex;
   flex-direction: column;
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), var(--shadow-glow);
   animation: modalIn 0.25s ease-out;
+  position: relative;
 }
 
 .modal-card.modal-lg {

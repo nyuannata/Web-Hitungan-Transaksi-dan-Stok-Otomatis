@@ -10,10 +10,10 @@ export const MengudaraLogo = ({ width = 280, height = 'auto', color = '#000000',
       <svg
         viewBox="0 0 800 280"
         width={width}
-        height={height}
+        {...(height !== 'auto' ? { height } : {})}
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        style={{ overflow: 'visible', maxWidth: '100%' }}
+        style={{ overflow: 'visible', maxWidth: '100%', height: height === 'auto' ? 'auto' : undefined }}
       >
         <defs>
           {/* Wavy Liquid Organic Filter for 70s Screen Printing Aesthetic */}

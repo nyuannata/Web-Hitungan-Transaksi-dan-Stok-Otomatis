@@ -104,49 +104,51 @@ export const Topbar = ({ title }) => {
   };
 
   return (
-    <header className="topbar no-print">
-      <div className="topbar-title" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-        <span>{title}</span>
-        <button
-          className={`badge ${isCloudActive ? 'badge-success' : 'badge-warning'}`}
-          style={{ border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
-          onClick={() => setShowConfigModal(true)}
-          title="Klik untuk Pengaturan Database Cloud Firebase"
-        >
-          <Cloud size={12} />
-          {isCloudActive ? 'Cloud Sync Aktif' : 'Mode Lokal (Offline)'}
-        </button>
-      </div>
-
-      <div className="topbar-actions">
-        <div className="month-selector">
-          <span>Bulan Periode:</span>
-          <input
-            type="month"
-            value={selectedMonth}
-            onChange={(e) => setSelectedMonth(e.target.value)}
-            className="form-control"
-            style={{ width: 'auto', padding: '0.2rem 0.5rem', height: '32px' }}
-          />
+    <>
+      <header className="topbar no-print">
+        <div className="topbar-title" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <span>{title}</span>
+          <button
+            className={`badge ${isCloudActive ? 'badge-success' : 'badge-warning'}`}
+            style={{ border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
+            onClick={() => setShowConfigModal(true)}
+            title="Klik untuk Pengaturan Database Cloud Firebase"
+          >
+            <Cloud size={12} />
+            {isCloudActive ? 'Cloud Sync Aktif' : 'Mode Lokal (Offline)'}
+          </button>
         </div>
 
-        <button className="btn btn-secondary btn-sm" onClick={exportDataJSON} title="Ekspor Cadangan Data JSON">
-          <Download size={14} /> Ekspor
-        </button>
+        <div className="topbar-actions">
+          <div className="month-selector">
+            <span>Bulan Periode:</span>
+            <input
+              type="month"
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              className="form-control"
+              style={{ width: 'auto', padding: '0.2rem 0.5rem', height: '32px' }}
+            />
+          </div>
 
-        <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer' }} title="Impor Cadangan Data JSON">
-          <Upload size={14} /> Impor
-          <input type="file" accept=".json" onChange={handleFileImport} style={{ display: 'none' }} />
-        </label>
+          <button className="btn btn-secondary btn-sm" onClick={exportDataJSON} title="Ekspor Cadangan Data JSON">
+            <Download size={14} /> Ekspor
+          </button>
 
-        <button className="btn btn-secondary btn-sm" onClick={() => setShowConfigModal(true)} title="Pengaturan Cloud Database">
-          <Settings size={14} /> Cloud DB
-        </button>
+          <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer' }} title="Impor Cadangan Data JSON">
+            <Upload size={14} /> Impor
+            <input type="file" accept=".json" onChange={handleFileImport} style={{ display: 'none' }} />
+          </label>
 
-        <button className="btn btn-secondary btn-sm" onClick={() => setShowResetModal(true)} title="Pilihan Reset & Kosongkan Data">
-          <RotateCcw size={14} /> Reset Data
-        </button>
-      </div>
+          <button className="btn btn-secondary btn-sm" onClick={() => setShowConfigModal(true)} title="Pengaturan Cloud Database">
+            <Settings size={14} /> Cloud DB
+          </button>
+
+          <button className="btn btn-secondary btn-sm" onClick={() => setShowResetModal(true)} title="Pilihan Reset & Kosongkan Data">
+            <RotateCcw size={14} /> Reset Data
+          </button>
+        </div>
+      </header>
 
       {/* Cloud DB Config Modal */}
       {showConfigModal && (
@@ -323,6 +325,6 @@ export const Topbar = ({ title }) => {
           </div>
         </div>
       )}
-    </header>
+    </>
   );
 };

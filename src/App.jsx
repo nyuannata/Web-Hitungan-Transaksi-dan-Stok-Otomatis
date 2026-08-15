@@ -9,8 +9,11 @@ import { FinanceManager } from './components/Finance/FinanceManager';
 import { StockManager } from './components/Inventory/StockManager';
 import { FabricLeftovers } from './components/Inventory/FabricLeftovers';
 import { CustomerManager } from './components/Customers/CustomerManager';
+import { Login } from './components/Auth/Login';
 
-function AppContent() {
+const AUTH_KEY = 'MENGUDARA_AUTH_SESSION_V1';
+
+function AppContent({ onLogout }) {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showOrderModal, setShowOrderModal] = useState(false);
   const [showExpenseModal, setShowExpenseModal] = useState(false);
@@ -43,7 +46,7 @@ function AppContent() {
 
   return (
     <div className="app-container">
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} onLogout={onLogout} />
 
       <div className="main-content">
         <Topbar title={getTabTitle()} />
@@ -108,9 +111,28 @@ function AppContent() {
 }
 
 export default function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return (
+      localStorage.getItem(AUTH_KEY) === 'true' ||
+      sessionStorage.getItem(AUTH_KEY) === 'true'
+    );
+  });
+
+  const handleLogout = () => {
+    if (window.confirm('Apakah Anda yakin ingin keluar dari akun?')) {
+      localStorage.removeItem(AUTH_KEY);
+      sessionStorage.removeItem(AUTH_KEY);
+      setIsAuthenticated(false);
+    }
+  };
+
+  if (!isAuthenticated) {
+    return <Login onLoginSuccess={() => setIsAuthenticated(true)} />;
+  }
+
   return (
     <AppProvider>
-      <AppContent />
+      <AppContent onLogout={handleLogout} />
     </AppProvider>
   );
 }

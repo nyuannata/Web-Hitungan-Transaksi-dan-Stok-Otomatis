@@ -15,12 +15,14 @@ import {
   Settings,
   Eye,
   EyeOff,
-  FileSpreadsheet
+  FileSpreadsheet,
+  LogOut,
+  UserCheck
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { MengudaraLogo } from './MengudaraLogo';
 
-export const Sidebar = ({ activeTab, setActiveTab }) => {
+export const Sidebar = ({ activeTab, setActiveTab, onLogout }) => {
   const { data } = useApp();
 
   const activeOrdersCount = data.orders.filter((o) => o.status !== 'Selesai').length;
@@ -47,7 +49,6 @@ export const Sidebar = ({ activeTab, setActiveTab }) => {
         </div>
       </div>
 
-
       <nav className="sidebar-nav">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -69,6 +70,61 @@ export const Sidebar = ({ activeTab, setActiveTab }) => {
           );
         })}
       </nav>
+
+      {/* User Account & Logout Footer */}
+      <div
+        className="sidebar-footer"
+        style={{
+          padding: '1rem',
+          borderTop: '1px solid var(--border-color)',
+          marginTop: 'auto',
+          background: 'rgba(20, 4, 6, 0.65)'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.75rem' }}>
+          <div
+            style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #ef4444, #991b1b)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: 800,
+              fontSize: '0.85rem',
+              color: 'white',
+              flexShrink: 0
+            }}
+          >
+            Z
+          </div>
+          <div style={{ overflow: 'hidden', minWidth: 0 }}>
+            <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#ffffff', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+              Zodimengudara
+            </div>
+            <div style={{ fontSize: '0.68rem', color: '#fca5a5', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+              Zodimengudara@gmail.com
+            </div>
+          </div>
+        </div>
+        <button
+          className="btn btn-secondary btn-sm"
+          style={{
+            width: '100%',
+            justifyContent: 'center',
+            gap: '0.4rem',
+            fontSize: '0.78rem',
+            color: '#fca5a5',
+            borderColor: 'rgba(239, 68, 68, 0.35)',
+            padding: '0.45rem 0.5rem'
+          }}
+          onClick={onLogout}
+          title="Keluar dari Akun"
+        >
+          <LogOut size={14} /> Keluar (Logout)
+        </button>
+      </div>
     </aside>
   );
 };

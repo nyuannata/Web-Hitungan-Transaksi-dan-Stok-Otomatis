@@ -108,15 +108,14 @@ export const Topbar = ({ title }) => {
       <header className="topbar no-print">
         <div className="topbar-title" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <span>{title}</span>
-          <button
+          <span
             className={`badge ${isCloudActive ? 'badge-success' : 'badge-warning'}`}
-            style={{ border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
-            onClick={() => setShowConfigModal(true)}
-            title="Klik untuk Pengaturan Database Cloud Firebase"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
+            title="Status Database Cloud Firebase Real-Time"
           >
             <Cloud size={12} />
             {isCloudActive ? 'Cloud Sync Aktif' : 'Mode Lokal (Offline)'}
-          </button>
+          </span>
         </div>
 
         <div className="topbar-actions">
@@ -140,115 +139,11 @@ export const Topbar = ({ title }) => {
             <input type="file" accept=".json" onChange={handleFileImport} style={{ display: 'none' }} />
           </label>
 
-          <button className="btn btn-secondary btn-sm" onClick={() => setShowConfigModal(true)} title="Pengaturan Cloud Database">
-            <Settings size={14} /> Cloud DB
-          </button>
-
           <button className="btn btn-secondary btn-sm" onClick={() => setShowResetModal(true)} title="Pilihan Reset & Kosongkan Data">
             <RotateCcw size={14} /> Reset Data
           </button>
         </div>
       </header>
-
-      {/* Cloud DB Config Modal */}
-      {showConfigModal && (
-        <div className="modal-overlay">
-          <div className="modal-card">
-            <div className="modal-header">
-              <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Cloud size={20} style={{ color: 'var(--primary)' }} /> Pengaturan Cloud Database (Firebase)
-              </h3>
-              <button
-                style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
-                onClick={() => setShowConfigModal(false)}
-              >
-                ✕
-              </button>
-            </div>
-            <form onSubmit={handleSaveFirebaseKeys}>
-              <div className="modal-body">
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
-                  Fitur ini opsional. Hubungkan ke proyek Firebase Cloud Anda gratis agar **semua HP, Laptop, dan Tablet terhubung & tersinkronisasi otomatis secara real-time**:
-                </p>
-
-                <div className="form-group">
-                  <label className="form-label">Project ID Firebase *</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Contoh: mengudara-konveksi-123"
-                    value={configForm.projectId || ''}
-                    onChange={(e) => setConfigForm({ ...configForm, projectId: e.target.value })}
-                    required
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">API Key Firebase *</label>
-                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                    <input
-                      type={showShowApiKey ? 'text' : 'password'}
-                      className="form-control"
-                      style={{ paddingRight: '2.5rem' }}
-                      placeholder="Masukkan AIzaSyD..."
-                      value={configForm.apiKey || ''}
-                      onChange={(e) => setConfigForm({ ...configForm, apiKey: e.target.value })}
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowShowApiKey(!showShowApiKey)}
-                      style={{
-                        position: 'absolute',
-                        right: '0.75rem',
-                        background: 'none',
-                        border: 'none',
-                        color: 'var(--text-muted)',
-                        cursor: 'pointer'
-                      }}
-                      title={showShowApiKey ? 'Sembunyikan API Key' : 'Tampilkan API Key'}
-                    >
-                      {showShowApiKey ? <EyeOff size={16} /> : <Eye size={16} />}
-                    </button>
-                  </div>
-                </div>
-
-                <div className="form-row">
-                  <div className="form-group">
-                    <label className="form-label">Auth Domain</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="proyek-anda.firebaseapp.com"
-                      value={configForm.authDomain || ''}
-                      onChange={(e) => setConfigForm({ ...configForm, authDomain: e.target.value })}
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label">App ID</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="1:123456789:web:abcdef"
-                      value={configForm.appId || ''}
-                      onChange={(e) => setConfigForm({ ...configForm, appId: e.target.value })}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowConfigModal(false)}>
-                  Batal
-                </button>
-                <button type="submit" className="btn btn-primary">
-                  Simpan & Hubungkan Cloud
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
       {/* Reset Options Modal */}
       {showResetModal && (
         <div className="modal-overlay">

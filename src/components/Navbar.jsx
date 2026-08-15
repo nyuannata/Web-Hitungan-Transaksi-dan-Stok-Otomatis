@@ -97,14 +97,14 @@ export const Sidebar = ({ activeTab, setActiveTab, onLogout }) => {
               flexShrink: 0
             }}
           >
-            Z
+            z
           </div>
           <div style={{ overflow: 'hidden', minWidth: 0 }}>
             <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#ffffff', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
-              Zodimengudara
+              zodimengudara
             </div>
             <div style={{ fontSize: '0.68rem', color: '#fca5a5', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
-              Zodimengudara@gmail.com
+              zodimengudara@gmail.com
             </div>
           </div>
         </div>

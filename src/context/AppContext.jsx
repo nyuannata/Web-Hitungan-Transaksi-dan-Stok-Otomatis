@@ -121,7 +121,8 @@ const getInitialData = () => {
         amount: 180000,
         description: 'Penjualan perca sisa potong 3.5kg'
       }
-    ]
+    ],
+    initialBalances: {}
   };
 };
 
@@ -428,6 +429,20 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  // Set Initial Balance (Saldo Awal) per month
+  const setInitialBalance = (amount, month = selectedMonth) => {
+    updateDataState((prev) => {
+      const currentBalances = prev.initialBalances || {};
+      return {
+        ...prev,
+        initialBalances: {
+          ...currentBalances,
+          [month]: Number(amount) || 0
+        }
+      };
+    });
+  };
+
   // Export full monthly report to Excel (CSV format compatible with Excel & Google Sheets)
   const exportToExcel = () => {
     const monthlyOrders = data.orders.filter(
@@ -440,19 +455,22 @@ export const AppProvider = ({ children }) => {
       (i) => i.date && i.date.startsWith(selectedMonth)
     );
 
+    const initialBalance = (data.initialBalances && data.initialBalances[selectedMonth]) || 0;
+
     const totalIncome =
       monthlyOrders.reduce((acc, o) => acc + (o.dp || 0), 0) +
       monthlyManualIncomes.reduce((acc, i) => acc + (i.amount || 0), 0);
     const totalExpense = monthlyExpenses.reduce((acc, e) => acc + (e.amount || 0), 0);
     const netProfit = totalIncome - totalExpense;
+    const finalCashBalance = initialBalance + totalIncome - totalExpense;
 
     let csvContent = '\uFEFF'; // UTF-8 BOM for Excel character rendering
 
     // Section 1: Ringkasan Usaha
     csvContent += `=== MENGUDARA SCREEN PRINTING - LAPORAN PERIODE ${selectedMonth} ===\n\n`;
     csvContent += `RINGKASAN KEUANGAN BULANAN\n`;
-    csvContent += `Periode,Total Pemasukan,Total Pengeluaran,Keuntungan Bersih (Profit)\n`;
-    csvContent += `"${selectedMonth}","Rp ${totalIncome.toLocaleString('id-ID')}","Rp ${totalExpense.toLocaleString('id-ID')}","Rp ${netProfit.toLocaleString('id-ID')}"\n\n`;
+    csvContent += `Periode,Saldo Awal Kas,Total Pemasukan,Total Pengeluaran,Keuntungan Bersih (Profit/Loss),Total Saldo Kas Akhir\n`;
+    csvContent += `"${selectedMonth}","Rp ${initialBalance.toLocaleString('id-ID')}","Rp ${totalIncome.toLocaleString('id-ID')}","Rp ${totalExpense.toLocaleString('id-ID')}","Rp ${netProfit.toLocaleString('id-ID')}","Rp ${finalCashBalance.toLocaleString('id-ID')}"\n\n`;
 
     // Section 2: Orderan Masuk & Transaksi
     csvContent += `DAFTAR ORDERAN DAN TRANSAKSI PELANGGAN\n`;
@@ -664,7 +682,8 @@ export const AppProvider = ({ children }) => {
         importDataJSON,
         clearFinancialData,
         resetAllToZero,
-        resetData
+        resetData,
+        setInitialBalance
       }}
     >
       {children}

@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
-import { Wallet, TrendingUp, TrendingDown, PlusCircle, Calendar, Tag, FileText, Trash2, RotateCcw, FileSpreadsheet } from 'lucide-react';
+import { Wallet, TrendingUp, TrendingDown, PlusCircle, Calendar, Tag, FileText, Trash2, RotateCcw, FileSpreadsheet, Coins, Edit3 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
 export const FinanceManager = ({ defaultExpenseModalOpen }) => {
-  const { data, selectedMonth, addExpense, deleteExpense, addManualIncome, deleteManualIncome, clearFinancialData, resetAllToZero, exportToExcel } = useApp();
+  const { data, selectedMonth, addExpense, deleteExpense, addManualIncome, deleteManualIncome, clearFinancialData, resetAllToZero, exportToExcel, setInitialBalance } = useApp();
   const [activeSubTab, setActiveSubTab] = useState('pengeluaran'); // 'pengeluaran' | 'pemasukan'
 
   // Modals
   const [showExpenseModal, setShowExpenseModal] = useState(defaultExpenseModalOpen || false);
   const [showIncomeModal, setShowIncomeModal] = useState(false);
+  const [showBalanceModal, setShowBalanceModal] = useState(false);
+  const [balanceInput, setBalanceInput] = useState('');
+
+  // Initial balance for selected month
+  const currentInitialBalance = (data.initialBalances && data.initialBalances[selectedMonth]) || 0;
 
   // Forms
   const [expenseForm, setExpenseForm] = useState({
@@ -56,6 +61,7 @@ export const FinanceManager = ({ defaultExpenseModalOpen }) => {
   const totalExpense = monthlyExpenses.reduce((acc, e) => acc + Number(e.amount || 0), 0);
   const totalIncome = allMonthlyIncomes.reduce((acc, i) => acc + Number(i.amount || 0), 0);
   const netProfit = totalIncome - totalExpense;
+  const totalEndingCash = currentInitialBalance + netProfit;
 
   const formatRupiah = (val) => {
     return new Intl.NumberFormat('id-ID', {
@@ -63,6 +69,12 @@ export const FinanceManager = ({ defaultExpenseModalOpen }) => {
       currency: 'IDR',
       maximumFractionDigits: 0
     }).format(val || 0);
+  };
+
+  const handleSaveInitialBalance = (e) => {
+    e.preventDefault();
+    setInitialBalance(balanceInput, selectedMonth);
+    setShowBalanceModal(false);
   };
 
   const handleExpenseSubmit = (e) => {
@@ -108,6 +120,17 @@ export const FinanceManager = ({ defaultExpenseModalOpen }) => {
         </div>
 
         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <button
+            className="btn btn-secondary btn-sm"
+            style={{ borderColor: 'rgba(251, 191, 36, 0.4)', color: '#fbbf24' }}
+            onClick={() => {
+              setBalanceInput(currentInitialBalance > 0 ? currentInitialBalance : '');
+              setShowBalanceModal(true);
+            }}
+            title="Masukkan / Ubah Saldo Awal Kas Usaha Bulan Ini"
+          >
+            <Coins size={15} /> Saldo Awal: {formatRupiah(currentInitialBalance)}
+          </button>
           <button className="btn btn-success btn-sm" onClick={exportToExcel} title="Unduh Laporan Keuangan ke Excel">
             <FileSpreadsheet size={15} /> Unduh Excel
           </button>
@@ -122,6 +145,32 @@ export const FinanceManager = ({ defaultExpenseModalOpen }) => {
 
       {/* Summary Row */}
       <div className="grid-stats">
+        <div
+          className="stat-card"
+          style={{ cursor: 'pointer', border: '1px solid rgba(251, 191, 36, 0.35)' }}
+          onClick={() => {
+            setBalanceInput(currentInitialBalance > 0 ? currentInitialBalance : '');
+            setShowBalanceModal(true);
+          }}
+          title="Klik untuk mengubah Saldo Awal"
+        >
+          <div className="stat-header">
+            <span>Saldo Awal Kas ({selectedMonth})</span>
+            <div className="stat-icon warning">
+              <Coins size={20} />
+            </div>
+          </div>
+          <div className="stat-value" style={{ color: '#fbbf24' }}>
+            {formatRupiah(currentInitialBalance)}
+          </div>
+          <div className="stat-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span>Modal kas awal periode</span>
+            <span style={{ color: '#fbbf24', fontSize: '0.75rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+              <Edit3 size={11} /> Ubah
+            </span>
+          </div>
+        </div>
+
         <div className="stat-card">
           <div className="stat-header">
             <span>Total Pemasukan ({selectedMonth})</span>
@@ -131,6 +180,9 @@ export const FinanceManager = ({ defaultExpenseModalOpen }) => {
           </div>
           <div className="stat-value" style={{ color: '#34d399' }}>
             {formatRupiah(totalIncome)}
+          </div>
+          <div className="stat-footer">
+            DP orderan & pemasukan kas
           </div>
         </div>
 
@@ -144,6 +196,9 @@ export const FinanceManager = ({ defaultExpenseModalOpen }) => {
           <div className="stat-value" style={{ color: '#f43f5e' }}>
             {formatRupiah(totalExpense)}
           </div>
+          <div className="stat-footer">
+            Biaya operasional & belanja kain
+          </div>
         </div>
 
         <div className="stat-card">
@@ -155,6 +210,24 @@ export const FinanceManager = ({ defaultExpenseModalOpen }) => {
           </div>
           <div className="stat-value" style={{ color: netProfit >= 0 ? '#818cf8' : '#f43f5e' }}>
             {formatRupiah(netProfit)}
+          </div>
+          <div className="stat-footer">
+            Pemasukan - Pengeluaran
+          </div>
+        </div>
+
+        <div className="stat-card" style={{ border: '1px solid rgba(56, 189, 248, 0.35)' }}>
+          <div className="stat-header">
+            <span>Total Saldo Kas Akhir</span>
+            <div className="stat-icon info" style={{ background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8' }}>
+              <Coins size={20} />
+            </div>
+          </div>
+          <div className="stat-value" style={{ color: '#38bdf8' }}>
+            {formatRupiah(totalEndingCash)}
+          </div>
+          <div className="stat-footer">
+            Saldo Awal + Hasil Bersih
           </div>
         </div>
       </div>
@@ -431,6 +504,69 @@ export const FinanceManager = ({ defaultExpenseModalOpen }) => {
                 </button>
                 <button type="submit" className="btn btn-success">
                   Simpan Pemasukan
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Saldo Awal Input Modal */}
+      {showBalanceModal && (
+        <div className="modal-overlay">
+          <div className="modal-card" style={{ maxWidth: '450px' }}>
+            <div className="modal-header">
+              <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#fbbf24' }}>
+                <Coins size={22} /> Masukkan Saldo Awal Kas
+              </h3>
+              <button
+                style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '1.2rem' }}
+                onClick={() => setShowBalanceModal(false)}
+              >
+                ✕
+              </button>
+            </div>
+            <form onSubmit={handleSaveInitialBalance}>
+              <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                <div style={{ background: 'rgba(251, 191, 36, 0.1)', border: '1px solid rgba(251, 191, 36, 0.3)', borderRadius: 'var(--radius-md)', padding: '0.85rem' }}>
+                  <p style={{ fontSize: '0.825rem', color: '#fef3c7', margin: 0, lineHeight: 1.5 }}>
+                    💡 <strong>Saldo Awal ({selectedMonth})</strong> adalah modal kas / uang kas toko yang tersedia sebelum transaksi usaha bulan ini dimulai.
+                  </p>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 700 }}>
+                    Nominal Saldo Awal Kas (Rp) *
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="1000"
+                    placeholder="Contoh: 5000000"
+                    value={balanceInput}
+                    onChange={(e) => setBalanceInput(e.target.value)}
+                    className="form-control"
+                    style={{ fontSize: '1.1rem', fontWeight: 700, color: '#fbbf24' }}
+                    autoFocus
+                    required
+                  />
+                  {balanceInput > 0 && (
+                    <small style={{ color: '#34d399', fontWeight: 600, display: 'block', marginTop: '0.35rem' }}>
+                      Terbaca: {formatRupiah(balanceInput)}
+                    </small>
+                  )}
+                </div>
+              </div>
+              <div className="modal-footer" style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setShowBalanceModal(false)}
+                >
+                  Batal
+                </button>
+                <button type="submit" className="btn btn-primary" style={{ background: 'linear-gradient(135deg, #d97706, #b45309)', borderColor: '#d97706' }}>
+                  Simpan Saldo Awal
                 </button>
               </div>
             </form>

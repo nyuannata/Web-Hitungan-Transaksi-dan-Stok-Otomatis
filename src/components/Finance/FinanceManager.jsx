@@ -111,9 +111,6 @@ export const FinanceManager = ({ defaultExpenseModalOpen }) => {
           <button className="btn btn-success btn-sm" onClick={exportToExcel} title="Unduh Laporan Keuangan ke Excel">
             <FileSpreadsheet size={15} /> Unduh Excel
           </button>
-          <button className="btn btn-secondary btn-sm" style={{ color: '#f87171', border: '1px solid rgba(248,113,113,0.4)' }} onClick={clearFinancialData} title="Kosongkan Semua Transaksi Keuangan ke Rp 0">
-            <RotateCcw size={15} /> Reset Hitungan ke Rp 0
-          </button>
           <button className="btn btn-danger btn-sm" onClick={() => setShowExpenseModal(true)}>
             <TrendingDown size={16} /> + Catat Pengeluaran
           </button>

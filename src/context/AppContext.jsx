@@ -428,7 +428,102 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // Export & Import
+  // Export full monthly report to Excel (CSV format compatible with Excel & Google Sheets)
+  const exportToExcel = () => {
+    const monthlyOrders = data.orders.filter(
+      (o) => o.createdAt && o.createdAt.startsWith(selectedMonth)
+    );
+    const monthlyExpenses = data.expenses.filter(
+      (e) => e.date && e.date.startsWith(selectedMonth)
+    );
+    const monthlyManualIncomes = data.manualIncomes.filter(
+      (i) => i.date && i.date.startsWith(selectedMonth)
+    );
+
+    const totalIncome =
+      monthlyOrders.reduce((acc, o) => acc + (o.dp || 0), 0) +
+      monthlyManualIncomes.reduce((acc, i) => acc + (i.amount || 0), 0);
+    const totalExpense = monthlyExpenses.reduce((acc, e) => acc + (e.amount || 0), 0);
+    const netProfit = totalIncome - totalExpense;
+
+    let csvContent = '\uFEFF'; // UTF-8 BOM for Excel character rendering
+
+    // Section 1: Ringkasan Usaha
+    csvContent += `=== MENGUDARA SCREEN PRINTING - LAPORAN PERIODE ${selectedMonth} ===\n\n`;
+    csvContent += `RINGKASAN KEUANGAN BULANAN\n`;
+    csvContent += `Periode,Total Pemasukan,Total Pengeluaran,Keuntungan Bersih (Profit)\n`;
+    csvContent += `"${selectedMonth}","Rp ${totalIncome.toLocaleString('id-ID')}","Rp ${totalExpense.toLocaleString('id-ID')}","Rp ${netProfit.toLocaleString('id-ID')}"\n\n`;
+
+    // Section 2: Orderan Masuk & Transaksi
+    csvContent += `DAFTAR ORDERAN DAN TRANSAKSI PELANGGAN\n`;
+    csvContent += `ID Order,Tanggal,Nama Pelanggan,No Telp/WA,Alamat,Judul Orderan,Merek Kain,Lengan,Warna,Ukuran (S/M/L/XL/XXL),Jumlah (Pcs),Total Harga,DP Masuk,Sisa Pembayaran,Status\n`;
+    
+    if (data.orders.length === 0) {
+      csvContent += `Belum ada orderan tercatat.\n`;
+    } else {
+      data.orders.forEach((o) => {
+        const sizesStr = Object.entries(o.sizes || {})
+          .map(([k, v]) => `${k}:${v}`)
+          .join(' ');
+        csvContent += `"${o.id}","${o.createdAt || ''}","${o.customerName || ''}","${o.customerPhone || ''}","${(o.customerAddress || '').replace(/"/g, '""')}","${(o.orderTitle || '').replace(/"/g, '""')}","${o.fabricBrand || ''}","${o.sleeveType || ''}","${o.color || ''}","${sizesStr}","${o.quantity || 0}","Rp ${(o.totalPrice || 0).toLocaleString('id-ID')}","Rp ${(o.dp || 0).toLocaleString('id-ID')}","Rp ${(o.remaining || 0).toLocaleString('id-ID')}","${o.status || ''}"\n`;
+      });
+    }
+    csvContent += `\n`;
+
+    // Section 3: Pengeluaran Usaha
+    csvContent += `DAFTAR PENGELUARAN USAHA\n`;
+    csvContent += `ID Pengeluaran,Tanggal,Kategori,Keterangan/Deskripsi,Nominal\n`;
+    if (data.expenses.length === 0) {
+      csvContent += `Belum ada pengeluaran tercatat.\n`;
+    } else {
+      data.expenses.forEach((e) => {
+        csvContent += `"${e.id}","${e.date || ''}","${e.category || ''}","${(e.description || '').replace(/"/g, '""')}","Rp ${(e.amount || 0).toLocaleString('id-ID')}"\n`;
+      });
+    }
+    csvContent += `\n`;
+
+    // Section 4: Pemasukan Manual
+    csvContent += `DAFTAR PEMASUKAN MANUAL & PELUNASAN\n`;
+    csvContent += `ID Pemasukan,Tanggal,Kategori,Keterangan/Deskripsi,Nominal\n`;
+    if (data.manualIncomes.length === 0) {
+      csvContent += `Belum ada pemasukan manual tercatat.\n`;
+    } else {
+      data.manualIncomes.forEach((i) => {
+        csvContent += `"${i.id}","${i.date || ''}","${i.category || ''}","${(i.description || '').replace(/"/g, '""')}","Rp ${(i.amount || 0).toLocaleString('id-ID')}"\n`;
+      });
+    }
+    csvContent += `\n`;
+
+    // Section 5: Stok Kaos & Kain
+    csvContent += `REKAP STOK KAOS DAN BAHAN KAIN\n`;
+    csvContent += `Merek Kain,Jenis Lengan,Warna Kain,Ukuran S,Ukuran M,Ukuran L,Ukuran XL,Ukuran XXL,Total Stok (Pcs)\n`;
+    if (data.inventory) {
+      Object.entries(data.inventory).forEach(([brand, sleeves]) => {
+        if (sleeves && typeof sleeves === 'object') {
+          Object.entries(sleeves).forEach(([sleeve, items]) => {
+            if (Array.isArray(items)) {
+              items.forEach((item) => {
+                const s = item.sizes || {};
+                const totalPcs = Object.values(s).reduce((a, b) => a + Number(b || 0), 0);
+                csvContent += `"${brand}","${sleeve}","${item.color || ''}","${s.S || 0}","${s.M || 0}","${s.L || 0}","${s.XL || 0}","${s.XXL || 0}","${totalPcs} pcs"\n`;
+              });
+            }
+          });
+        }
+      });
+    }
+
+    // Download file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `Laporan_Excel_Mengudara_${selectedMonth}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // Export & Import JSON Backup
   const exportDataJSON = () => {
     const jsonStr = JSON.stringify(data, null, 2);
     const blob = new Blob([jsonStr], { type: 'application/json' });
@@ -565,6 +660,7 @@ export const AppProvider = ({ children }) => {
         addLeftover,
         deleteLeftover,
         exportDataJSON,
+        exportToExcel,
         importDataJSON,
         clearFinancialData,
         resetAllToZero,

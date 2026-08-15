@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Wallet, TrendingUp, TrendingDown, PlusCircle, Calendar, Tag, FileText, Trash2, RotateCcw } from 'lucide-react';
+import { Wallet, TrendingUp, TrendingDown, PlusCircle, Calendar, Tag, FileText, Trash2, RotateCcw, FileSpreadsheet } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
 export const FinanceManager = ({ defaultExpenseModalOpen }) => {
-  const { data, selectedMonth, addExpense, deleteExpense, addManualIncome, deleteManualIncome, clearFinancialData, resetAllToZero } = useApp();
+  const { data, selectedMonth, addExpense, deleteExpense, addManualIncome, deleteManualIncome, clearFinancialData, resetAllToZero, exportToExcel } = useApp();
   const [activeSubTab, setActiveSubTab] = useState('pengeluaran'); // 'pengeluaran' | 'pemasukan'
 
   // Modals
@@ -108,6 +108,9 @@ export const FinanceManager = ({ defaultExpenseModalOpen }) => {
         </div>
 
         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <button className="btn btn-success btn-sm" onClick={exportToExcel} title="Unduh Laporan Keuangan ke Excel">
+            <FileSpreadsheet size={15} /> Unduh Excel
+          </button>
           <button className="btn btn-secondary btn-sm" style={{ color: '#f87171', border: '1px solid rgba(248,113,113,0.4)' }} onClick={clearFinancialData} title="Kosongkan Semua Transaksi Keuangan ke Rp 0">
             <RotateCcw size={15} /> Reset Hitungan ke Rp 0
           </button>

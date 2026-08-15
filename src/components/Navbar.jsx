@@ -14,7 +14,8 @@ import {
   Cloud,
   Settings,
   Eye,
-  EyeOff
+  EyeOff,
+  FileSpreadsheet
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { MengudaraLogo } from './MengudaraLogo';
@@ -77,6 +78,7 @@ export const Topbar = ({ title }) => {
     selectedMonth,
     setSelectedMonth,
     exportDataJSON,
+    exportToExcel,
     importDataJSON,
     clearFinancialData,
     resetAllToZero,
@@ -130,8 +132,12 @@ export const Topbar = ({ title }) => {
             />
           </div>
 
+          <button className="btn btn-success btn-sm" onClick={exportToExcel} title="Ekspor Laporan Bulanan ke File Excel (.csv)">
+            <FileSpreadsheet size={14} /> Ekspor Excel
+          </button>
+
           <button className="btn btn-secondary btn-sm" onClick={exportDataJSON} title="Ekspor Cadangan Data JSON">
-            <Download size={14} /> Ekspor
+            <Download size={14} /> Ekspor JSON
           </button>
 
           <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer' }} title="Impor Cadangan Data JSON">

@@ -290,10 +290,16 @@ export const Dashboard = ({ onNavigate, onOpenNewOrder, onOpenNewExpense }) => {
                       <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{order.customerPhone}</div>
                     </td>
                     <td>
-                      <div>{order.orderTitle}</div>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                        {order.fabricBrand} ({order.sleeveType}) - {order.color}
-                      </div>
+                      <div style={{ fontWeight: 600 }}>{order.orderTitle}</div>
+                      {Array.isArray(order.items) && order.items.length > 1 ? (
+                        <div style={{ fontSize: '0.72rem', color: '#fca5a5', fontWeight: 600 }}>
+                          📦 {order.items.length} Rincian Kain ({order.items.map((it) => `${it.sleeveType === 'Lengan Panjang' ? 'Panjang' : 'Pendek'} ${it.color}`).join(', ')})
+                        </div>
+                      ) : (
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                          {order.fabricBrand} ({order.sleeveType}) - {order.color}
+                        </div>
+                      )}
                     </td>
                     <td style={{ fontWeight: 700 }}>{order.quantity} pcs</td>
                     <td>{formatRupiah(order.totalPrice)}</td>

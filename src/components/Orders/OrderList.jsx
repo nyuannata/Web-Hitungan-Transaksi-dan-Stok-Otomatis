@@ -152,9 +152,22 @@ export const OrderList = ({ isCompletedView, onOpenNewOrder, onOpenInvoice }) =>
                       </td>
                       <td>
                         <div style={{ fontWeight: 600 }}>{order.orderTitle}</div>
-                        <div style={{ fontSize: '0.775rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                          <Shirt size={12} /> {order.fabricBrand} ({order.sleeveType}) - {order.color}
-                        </div>
+                        {Array.isArray(order.items) && order.items.length > 1 ? (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', marginTop: '0.3rem' }}>
+                            <span style={{ fontSize: '0.72rem', color: '#fca5a5', fontWeight: 700 }}>
+                              📦 {order.items.length} Jenis Kain/Item:
+                            </span>
+                            {order.items.map((it, idx) => (
+                              <div key={idx} style={{ fontSize: '0.73rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                • {it.fabricBrand} ({it.sleeveType}) - {it.color}: <strong style={{ color: '#ffffff' }}>{it.quantity} pcs</strong>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div style={{ fontSize: '0.775rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.25rem', marginTop: '0.2rem' }}>
+                            <Shirt size={12} /> {order.fabricBrand} ({order.sleeveType}) - {order.color}
+                          </div>
+                        )}
                       </td>
                       <td>
                         <div style={{ fontWeight: 700, color: 'var(--primary)' }}>{order.quantity} pcs</div>

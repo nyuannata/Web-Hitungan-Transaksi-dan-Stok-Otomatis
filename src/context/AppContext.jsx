@@ -207,23 +207,82 @@ export const AppProvider = ({ children }) => {
     });
   };
 
-  // Add new order
+  // Add new order (Supports multiple items/variants in a single order)
   const addOrder = (orderInput) => {
     const todayStr = new Date().toISOString().split('T')[0];
     const orderMonth = todayStr.substring(0, 7);
-    const orderId = `ORD-${orderMonth.replace('-', '')}-${String(data.orders.length + 1).padStart(3, '0')}`;
+    const orderId = `ORD-${orderMonth.replace('-', '')}-${String((data.orders || []).length + 1).padStart(3, '0')}`;
 
-    const totalQty = Object.values(orderInput.sizes || {}).reduce(
-      (acc, val) => acc + (Number(val) || 0),
-      0
-    );
+    let normalizedItems = [];
+    let totalQty = 0;
+    let totalPrice = 0;
+    const combinedSizes = { S: 0, M: 0, L: 0, XL: 0, XXL: 0 };
 
-    const totalPrice = (Number(orderInput.unitPrice) || 0) * totalQty;
+    if (Array.isArray(orderInput.items) && orderInput.items.length > 0) {
+      normalizedItems = orderInput.items.map((item, index) => {
+        const normSleeve = normalizeSleeve(item.sleeveType);
+        const itemSizes = item.sizes || { S: 0, M: 0, L: 0, XL: 0, XXL: 0 };
+        const itemQty = Object.values(itemSizes).reduce(
+          (sum, v) => sum + (Number(v) || 0),
+          0
+        );
+        const itemUnitPrice = Number(item.unitPrice) || 0;
+        const itemSubtotal = itemQty * itemUnitPrice;
+
+        totalQty += itemQty;
+        totalPrice += itemSubtotal;
+
+        Object.keys(itemSizes).forEach((sz) => {
+          combinedSizes[sz] = (combinedSizes[sz] || 0) + (Number(itemSizes[sz]) || 0);
+        });
+
+        // Deduct inventory for this item variant
+        deductInventory(item.fabricBrand, normSleeve, item.color, itemSizes);
+
+        return {
+          id: item.id || `item-${index + 1}`,
+          fabricBrand: item.fabricBrand,
+          sleeveType: normSleeve,
+          color: item.color,
+          sizes: itemSizes,
+          quantity: itemQty,
+          unitPrice: itemUnitPrice,
+          subtotal: itemSubtotal
+        };
+      });
+    } else {
+      // Single-item fallback for backward compatibility
+      const normSleeve = normalizeSleeve(orderInput.sleeveType);
+      const singleSizes = orderInput.sizes || { S: 0, M: 0, L: 0, XL: 0, XXL: 0 };
+      totalQty = Object.values(singleSizes).reduce((acc, val) => acc + (Number(val) || 0), 0);
+      const singleUnitPrice = Number(orderInput.unitPrice) || 0;
+      totalPrice = singleUnitPrice * totalQty;
+
+      deductInventory(orderInput.fabricBrand, normSleeve, orderInput.color, singleSizes);
+
+      normalizedItems = [
+        {
+          id: 'item-1',
+          fabricBrand: orderInput.fabricBrand,
+          sleeveType: normSleeve,
+          color: orderInput.color,
+          sizes: singleSizes,
+          quantity: totalQty,
+          unitPrice: singleUnitPrice,
+          subtotal: totalPrice
+        }
+      ];
+      Object.assign(combinedSizes, singleSizes);
+    }
+
     const dp = Number(orderInput.dp) || 0;
     const remaining = Math.max(0, totalPrice - dp);
     const status = remaining === 0 ? 'Selesai' : dp > 0 ? 'DP' : 'Belum Bayar';
 
-    const normalizedSleeve = normalizeSleeve(orderInput.sleeveType);
+    // Summary strings for quick table display
+    const brandsList = [...new Set(normalizedItems.map((i) => i.fabricBrand))].join(', ');
+    const sleevesList = [...new Set(normalizedItems.map((i) => i.sleeveType))].join(', ');
+    const colorsList = [...new Set(normalizedItems.map((i) => i.color))].join(', ');
 
     const newOrder = {
       id: orderId,
@@ -231,12 +290,14 @@ export const AppProvider = ({ children }) => {
       customerPhone: orderInput.customerPhone,
       customerAddress: orderInput.customerAddress,
       orderTitle: orderInput.orderTitle,
-      fabricBrand: orderInput.fabricBrand,
-      sleeveType: normalizedSleeve,
-      color: orderInput.color,
-      sizes: orderInput.sizes,
+      items: normalizedItems,
+      // Backward-compatible summary fields
+      fabricBrand: brandsList || (orderInput.fabricBrand || '-'),
+      sleeveType: sleevesList || (orderInput.sleeveType || '-'),
+      color: colorsList || (orderInput.color || '-'),
+      sizes: combinedSizes,
       quantity: totalQty,
-      unitPrice: Number(orderInput.unitPrice) || 0,
+      unitPrice: normalizedItems[0]?.unitPrice || Number(orderInput.unitPrice) || 0,
       totalPrice,
       dp,
       remaining,
@@ -246,11 +307,9 @@ export const AppProvider = ({ children }) => {
       notes: orderInput.notes || ''
     };
 
-    deductInventory(orderInput.fabricBrand, normalizedSleeve, orderInput.color, orderInput.sizes);
-
     updateDataState((prev) => ({
       ...prev,
-      orders: [newOrder, ...prev.orders]
+      orders: [newOrder, ...(prev.orders || [])]
     }));
 
     return newOrder;
@@ -483,7 +542,22 @@ export const AppProvider = ({ children }) => {
         const sizesStr = Object.entries(o.sizes || {})
           .map(([k, v]) => `${k}:${v}`)
           .join(' ');
-        csvContent += `"${o.id}","${o.createdAt || ''}","${o.customerName || ''}","${o.customerPhone || ''}","${(o.customerAddress || '').replace(/"/g, '""')}","${(o.orderTitle || '').replace(/"/g, '""')}","${o.fabricBrand || ''}","${o.sleeveType || ''}","${o.color || ''}","${sizesStr}","${o.quantity || 0}","Rp ${(o.totalPrice || 0).toLocaleString('id-ID')}","Rp ${(o.dp || 0).toLocaleString('id-ID')}","Rp ${(o.remaining || 0).toLocaleString('id-ID')}","${o.status || ''}"\n`;
+
+        let detailTitle = o.orderTitle || '';
+        if (Array.isArray(o.items) && o.items.length > 1) {
+          const itemsDetail = o.items
+            .map((it, idx) => {
+              const szStr = Object.entries(it.sizes || {})
+                .filter(([_, q]) => Number(q) > 0)
+                .map(([k, v]) => `${k}:${v}`)
+                .join(' ');
+              return `[Item ${idx + 1}] ${it.fabricBrand} (${it.sleeveType}) - ${it.color} (${szStr}) = ${it.quantity}pcs @Rp ${(it.unitPrice || 0).toLocaleString('id-ID')}`;
+            })
+            .join('; ');
+          detailTitle += ` (${itemsDetail})`;
+        }
+
+        csvContent += `"${o.id}","${o.createdAt || ''}","${o.customerName || ''}","${o.customerPhone || ''}","${(o.customerAddress || '').replace(/"/g, '""')}","${detailTitle.replace(/"/g, '""')}","${o.fabricBrand || ''}","${o.sleeveType || ''}","${o.color || ''}","${sizesStr}","${o.quantity || 0}","Rp ${(o.totalPrice || 0).toLocaleString('id-ID')}","Rp ${(o.dp || 0).toLocaleString('id-ID')}","Rp ${(o.remaining || 0).toLocaleString('id-ID')}","${o.status || ''}"\n`;
       });
     }
     csvContent += `\n`;

@@ -17,10 +17,20 @@ export const InvoiceModal = ({ order, onClose }) => {
     window.print();
   };
 
-  const sizesStr = Object.entries(order.sizes || {})
-    .filter(([_, qty]) => Number(qty) > 0)
-    .map(([sz, qty]) => `${sz}: ${qty} pcs`)
-    .join(', ');
+  const orderItems = Array.isArray(order.items) && order.items.length > 0
+    ? order.items
+    : [
+        {
+          id: 'item-1',
+          fabricBrand: order.fabricBrand,
+          sleeveType: order.sleeveType,
+          color: order.color,
+          sizes: order.sizes || {},
+          quantity: order.quantity || 0,
+          unitPrice: order.unitPrice || 0,
+          subtotal: order.totalPrice || 0
+        }
+      ];
 
   return (
     <div className="modal-overlay">
@@ -79,9 +89,11 @@ export const InvoiceModal = ({ order, onClose }) => {
                 </div>
                 <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a' }}>{order.orderTitle}</div>
                 <div style={{ fontSize: '0.85rem', color: '#334155' }}>
-                  Bahan: <strong>{order.fabricBrand}</strong> ({order.sleeveType})
+                  Total Qty: <strong>{order.quantity} Pcs</strong> ({orderItems.length} Rincian Kain/Item)
                 </div>
-                <div style={{ fontSize: '0.85rem', color: '#334155' }}>Warna: {order.color}</div>
+                <div style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                  Bahan: {order.fabricBrand} ({order.sleeveType})
+                </div>
               </div>
             </div>
 
@@ -89,8 +101,8 @@ export const InvoiceModal = ({ order, onClose }) => {
             <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
               <thead>
                 <tr style={{ background: '#0f172a', color: '#ffffff', textAlign: 'left' }}>
-                  <th style={{ padding: '0.6rem 0.8rem', border: '1px solid #0f172a' }}>No</th>
-                  <th style={{ padding: '0.6rem 0.8rem', border: '1px solid #0f172a' }}>Rincian Pekerjaan & Kain</th>
+                  <th style={{ padding: '0.6rem 0.8rem', border: '1px solid #0f172a', width: '35px', textAlign: 'center' }}>No</th>
+                  <th style={{ padding: '0.6rem 0.8rem', border: '1px solid #0f172a' }}>Rincian Jenis Kain & Warna</th>
                   <th style={{ padding: '0.6rem 0.8rem', border: '1px solid #0f172a' }}>Rincian Ukuran</th>
                   <th style={{ padding: '0.6rem 0.8rem', border: '1px solid #0f172a', textAlign: 'center' }}>Jumlah</th>
                   <th style={{ padding: '0.6rem 0.8rem', border: '1px solid #0f172a', textAlign: 'right' }}>Harga / Pcs</th>
@@ -98,27 +110,40 @@ export const InvoiceModal = ({ order, onClose }) => {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td style={{ padding: '0.75rem 0.8rem', border: '1px solid #cbd5e1' }}>1</td>
-                  <td style={{ padding: '0.75rem 0.8rem', border: '1px solid #cbd5e1' }}>
-                    <strong>{order.orderTitle}</strong>
-                    <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
-                      {order.fabricBrand} - {order.sleeveType} ({order.color})
-                    </div>
-                  </td>
-                  <td style={{ padding: '0.75rem 0.8rem', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}>
-                    {sizesStr}
-                  </td>
-                  <td style={{ padding: '0.75rem 0.8rem', border: '1px solid #cbd5e1', textAlign: 'center', fontWeight: 700 }}>
-                    {order.quantity} Pcs
-                  </td>
-                  <td style={{ padding: '0.75rem 0.8rem', border: '1px solid #cbd5e1', textAlign: 'right' }}>
-                    {formatRupiah(order.unitPrice)}
-                  </td>
-                  <td style={{ padding: '0.75rem 0.8rem', border: '1px solid #cbd5e1', textAlign: 'right', fontWeight: 700 }}>
-                    {formatRupiah(order.totalPrice)}
-                  </td>
-                </tr>
+                {orderItems.map((item, index) => {
+                  const itemSizesStr = Object.entries(item.sizes || {})
+                    .filter(([_, qty]) => Number(qty) > 0)
+                    .map(([sz, qty]) => `${sz}: ${qty}`)
+                    .join(', ') || '-';
+                  const itemPrice = Number(item.unitPrice) || Number(order.unitPrice) || 0;
+                  const itemSubtotal = Number(item.subtotal) || (Number(item.quantity) * itemPrice);
+
+                  return (
+                    <tr key={item.id || index}>
+                      <td style={{ padding: '0.75rem 0.8rem', border: '1px solid #cbd5e1', textAlign: 'center' }}>
+                        {index + 1}
+                      </td>
+                      <td style={{ padding: '0.75rem 0.8rem', border: '1px solid #cbd5e1' }}>
+                        <strong style={{ color: '#0f172a' }}>{item.fabricBrand || order.fabricBrand}</strong>
+                        <div style={{ fontSize: '0.8rem', color: '#475569' }}>
+                          Model: <strong>{item.sleeveType || order.sleeveType}</strong> | Warna: <strong>{item.color || order.color}</strong>
+                        </div>
+                      </td>
+                      <td style={{ padding: '0.75rem 0.8rem', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}>
+                        {itemSizesStr}
+                      </td>
+                      <td style={{ padding: '0.75rem 0.8rem', border: '1px solid #cbd5e1', textAlign: 'center', fontWeight: 700 }}>
+                        {item.quantity || 0} Pcs
+                      </td>
+                      <td style={{ padding: '0.75rem 0.8rem', border: '1px solid #cbd5e1', textAlign: 'right' }}>
+                        {formatRupiah(itemPrice)}
+                      </td>
+                      <td style={{ padding: '0.75rem 0.8rem', border: '1px solid #cbd5e1', textAlign: 'right', fontWeight: 700 }}>
+                        {formatRupiah(itemSubtotal)}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
 

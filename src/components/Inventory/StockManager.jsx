@@ -21,7 +21,7 @@ export const StockManager = () => {
     customSleeve: '',
     color: '',
     minAlert: 10,
-    sizes: { S: 0, M: 0, L: 0, XL: 0, XXL: 0 }
+    sizes: { S: 0, M: 0, L: 0, XL: 0, XXL: 0, '3XL': 0, '4XL': 0 }
   });
 
   // Active brand models
@@ -85,7 +85,7 @@ export const StockManager = () => {
       customSleeve: '',
       color: '',
       minAlert: 10,
-      sizes: { S: 0, M: 0, L: 0, XL: 0, XXL: 0 }
+      sizes: { S: 0, M: 0, L: 0, XL: 0, XXL: 0, '3XL': 0, '4XL': 0 }
     });
   };
 
@@ -119,6 +119,8 @@ export const StockManager = () => {
                   <th style={{ textAlign: 'center' }}>L</th>
                   <th style={{ textAlign: 'center' }}>XL</th>
                   <th style={{ textAlign: 'center' }}>XXL</th>
+                  <th style={{ textAlign: 'center' }}>3XL</th>
+                  <th style={{ textAlign: 'center' }}>4XL</th>
                   <th style={{ textAlign: 'center' }}>Total Stok</th>
                   <th style={{ textAlign: 'center' }}>Status Stok</th>
                   <th style={{ textAlign: 'center' }}>Aksi & Kelola</th>
@@ -144,6 +146,8 @@ export const StockManager = () => {
                       <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)' }}>{sizes.L || 0}</td>
                       <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)' }}>{sizes.XL || 0}</td>
                       <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)' }}>{sizes.XXL || 0}</td>
+                      <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)' }}>{sizes['3XL'] || 0}</td>
+                      <td style={{ textAlign: 'center', fontFamily: 'var(--font-mono)' }}>{sizes['4XL'] || 0}</td>
                       <td style={{ textAlign: 'center', fontWeight: 800, fontSize: '1rem', color: 'var(--primary)' }}>
                         {totalPcs} pcs
                       </td>
@@ -261,8 +265,8 @@ export const StockManager = () => {
                   Sesuaikan jumlah pcs stok yang tersedia di gudang per ukuran:
                 </p>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.5rem' }}>
-                  {['S', 'M', 'L', 'XL', 'XXL'].map((sz) => (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '0.4rem' }}>
+                  {['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL'].map((sz) => (
                     <div key={sz} style={{ textAlign: 'center' }}>
                       <label style={{ fontWeight: 700, fontSize: '0.8rem', display: 'block', marginBottom: '0.2rem' }}>
                         {sz}
@@ -271,7 +275,7 @@ export const StockManager = () => {
                         type="number"
                         min="0"
                         className="form-control"
-                        style={{ textAlign: 'center' }}
+                        style={{ textAlign: 'center', padding: '0.35rem' }}
                         value={editModalData.variant.sizes[sz] || 0}
                         onChange={(e) => {
                           const val = Math.max(0, parseInt(e.target.value) || 0);
@@ -404,16 +408,16 @@ export const StockManager = () => {
 
                 <div style={{ marginTop: '1rem', background: 'var(--bg-input)', padding: '1rem', borderRadius: 'var(--radius-md)' }}>
                   <label className="form-label">Jumlah Stok Awal Per Ukuran:</label>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.5rem', marginTop: '0.5rem' }}>
-                    {['S', 'M', 'L', 'XL', 'XXL'].map((sz) => (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '0.4rem', marginTop: '0.5rem' }}>
+                    {['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL'].map((sz) => (
                       <div key={sz} style={{ textAlign: 'center' }}>
                         <label style={{ fontSize: '0.75rem', fontWeight: 700 }}>{sz}</label>
                         <input
                           type="number"
                           min="0"
                           className="form-control"
-                          style={{ textAlign: 'center' }}
-                          value={newVariantForm.sizes[sz]}
+                          style={{ textAlign: 'center', padding: '0.35rem' }}
+                          value={newVariantForm.sizes[sz] || 0}
                           onChange={(e) => {
                             const val = Math.max(0, parseInt(e.target.value) || 0);
                             setNewVariantForm({

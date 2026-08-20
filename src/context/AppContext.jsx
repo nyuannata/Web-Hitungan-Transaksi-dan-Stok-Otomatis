@@ -32,7 +32,7 @@ const getInitialData = () => {
         fabricBrand: 'Combed 24S',
         sleeveType: 'Lengan Pendek',
         color: 'Hitam Reaktif',
-        sizes: { S: 10, M: 20, L: 15, XL: 5, XXL: 0 },
+        sizes: { S: 10, M: 20, L: 15, XL: 5, XXL: 0, '3XL': 0, '4XL': 0 },
         quantity: 50,
         unitPrice: 65000,
         totalPrice: 3250000,
@@ -52,7 +52,7 @@ const getInitialData = () => {
         fabricBrand: 'Stitch Supply',
         sleeveType: 'Lengan Panjang',
         color: 'Navy Blue',
-        sizes: { S: 0, M: 15, L: 15, XL: 0, XXL: 0 },
+        sizes: { S: 0, M: 15, L: 15, XL: 0, XXL: 0, '3XL': 0, '4XL': 0 },
         quantity: 30,
         unitPrice: 85000,
         totalPrice: 2550000,
@@ -67,22 +67,22 @@ const getInitialData = () => {
     inventory: {
       'Combed 24S': {
         'Lengan Pendek': [
-          { id: 'c24s-p-hitam', color: 'Hitam Reaktif', sizes: { S: 40, M: 30, L: 25, XL: 15, XXL: 10 }, minAlert: 15 },
-          { id: 'c24s-p-putih', color: 'Putih Netral', sizes: { S: 50, M: 45, L: 35, XL: 20, XXL: 15 }, minAlert: 15 },
-          { id: 'c24s-p-maroon', color: 'Maroon', sizes: { S: 25, M: 20, L: 15, XL: 10, XXL: 5 }, minAlert: 15 }
+          { id: 'c24s-p-hitam', color: 'Hitam Reaktif', sizes: { S: 40, M: 30, L: 25, XL: 15, XXL: 10, '3XL': 0, '4XL': 0 }, minAlert: 15 },
+          { id: 'c24s-p-putih', color: 'Putih Netral', sizes: { S: 50, M: 45, L: 35, XL: 20, XXL: 15, '3XL': 0, '4XL': 0 }, minAlert: 15 },
+          { id: 'c24s-p-maroon', color: 'Maroon', sizes: { S: 25, M: 20, L: 15, XL: 10, XXL: 5, '3XL': 0, '4XL': 0 }, minAlert: 15 }
         ],
         'Lengan Panjang': [
-          { id: 'c24s-pj-hitam', color: 'Hitam Reaktif', sizes: { S: 30, M: 25, L: 20, XL: 10, XXL: 5 }, minAlert: 15 },
-          { id: 'c24s-pj-navy', color: 'Navy', sizes: { S: 25, M: 20, L: 15, XL: 10, XXL: 5 }, minAlert: 15 }
+          { id: 'c24s-pj-hitam', color: 'Hitam Reaktif', sizes: { S: 30, M: 25, L: 20, XL: 10, XXL: 5, '3XL': 0, '4XL': 0 }, minAlert: 15 },
+          { id: 'c24s-pj-navy', color: 'Navy', sizes: { S: 25, M: 20, L: 15, XL: 10, XXL: 5, '3XL': 0, '4XL': 0 }, minAlert: 15 }
         ]
       },
       'Stitch Supply': {
         'Lengan Pendek': [
-          { id: 'ss-p-black', color: 'Solid Black', sizes: { S: 35, M: 30, L: 25, XL: 15, XXL: 10 }, minAlert: 10 },
-          { id: 'ss-p-white', color: 'Solid White', sizes: { S: 40, M: 35, L: 30, XL: 20, XXL: 10 }, minAlert: 10 }
+          { id: 'ss-p-black', color: 'Solid Black', sizes: { S: 35, M: 30, L: 25, XL: 15, XXL: 10, '3XL': 0, '4XL': 0 }, minAlert: 10 },
+          { id: 'ss-p-white', color: 'Solid White', sizes: { S: 40, M: 35, L: 30, XL: 20, XXL: 10, '3XL': 0, '4XL': 0 }, minAlert: 10 }
         ],
         'Lengan Panjang': [
-          { id: 'ss-pj-navy', color: 'Navy Blue', sizes: { S: 20, M: 15, L: 15, XL: 10, XXL: 5 }, minAlert: 10 }
+          { id: 'ss-pj-navy', color: 'Navy Blue', sizes: { S: 20, M: 15, L: 15, XL: 10, XXL: 5, '3XL': 0, '4XL': 0 }, minAlert: 10 }
         ]
       }
     },
@@ -216,12 +216,12 @@ export const AppProvider = ({ children }) => {
     let normalizedItems = [];
     let totalQty = 0;
     let totalPrice = 0;
-    const combinedSizes = { S: 0, M: 0, L: 0, XL: 0, XXL: 0 };
+    const combinedSizes = { S: 0, M: 0, L: 0, XL: 0, XXL: 0, '3XL': 0, '4XL': 0 };
 
     if (Array.isArray(orderInput.items) && orderInput.items.length > 0) {
       normalizedItems = orderInput.items.map((item, index) => {
         const normSleeve = normalizeSleeve(item.sleeveType);
-        const itemSizes = item.sizes || { S: 0, M: 0, L: 0, XL: 0, XXL: 0 };
+        const itemSizes = item.sizes || { S: 0, M: 0, L: 0, XL: 0, XXL: 0, '3XL': 0, '4XL': 0 };
         const itemQty = Object.values(itemSizes).reduce(
           (sum, v) => sum + (Number(v) || 0),
           0
@@ -253,7 +253,7 @@ export const AppProvider = ({ children }) => {
     } else {
       // Single-item fallback for backward compatibility
       const normSleeve = normalizeSleeve(orderInput.sleeveType);
-      const singleSizes = orderInput.sizes || { S: 0, M: 0, L: 0, XL: 0, XXL: 0 };
+      const singleSizes = orderInput.sizes || { S: 0, M: 0, L: 0, XL: 0, XXL: 0, '3XL': 0, '4XL': 0 };
       totalQty = Object.values(singleSizes).reduce((acc, val) => acc + (Number(val) || 0), 0);
       const singleUnitPrice = Number(orderInput.unitPrice) || 0;
       totalPrice = singleUnitPrice * totalQty;
@@ -588,7 +588,7 @@ export const AppProvider = ({ children }) => {
 
     // Section 5: Stok Kaos & Kain
     csvContent += `REKAP STOK KAOS DAN BAHAN KAIN\n`;
-    csvContent += `Merek Kain,Jenis Lengan,Warna Kain,Ukuran S,Ukuran M,Ukuran L,Ukuran XL,Ukuran XXL,Total Stok (Pcs)\n`;
+    csvContent += `Merek Kain,Jenis Lengan,Warna Kain,Ukuran S,Ukuran M,Ukuran L,Ukuran XL,Ukuran XXL,Ukuran 3XL,Ukuran 4XL,Total Stok (Pcs)\n`;
     if (data.inventory) {
       Object.entries(data.inventory).forEach(([brand, sleeves]) => {
         if (sleeves && typeof sleeves === 'object') {
@@ -597,7 +597,7 @@ export const AppProvider = ({ children }) => {
               items.forEach((item) => {
                 const s = item.sizes || {};
                 const totalPcs = Object.values(s).reduce((a, b) => a + Number(b || 0), 0);
-                csvContent += `"${brand}","${sleeve}","${item.color || ''}","${s.S || 0}","${s.M || 0}","${s.L || 0}","${s.XL || 0}","${s.XXL || 0}","${totalPcs} pcs"\n`;
+                csvContent += `"${brand}","${sleeve}","${item.color || ''}","${s.S || 0}","${s.M || 0}","${s.L || 0}","${s.XL || 0}","${s.XXL || 0}","${s['3XL'] || 0}","${s['4XL'] || 0}","${totalPcs} pcs"\n`;
               });
             }
           });
@@ -696,7 +696,7 @@ export const AppProvider = ({ children }) => {
           Object.keys(cleanInventory[brand]).forEach((sleeve) => {
             if (Array.isArray(cleanInventory[brand][sleeve])) {
               cleanInventory[brand][sleeve].forEach((item) => {
-                item.sizes = { S: 0, M: 0, L: 0, XL: 0, XXL: 0 };
+                item.sizes = { S: 0, M: 0, L: 0, XL: 0, XXL: 0, '3XL': 0, '4XL': 0 };
               });
             }
           });

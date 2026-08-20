@@ -25,7 +25,7 @@ export const OrderFormModal = ({ onClose, onOrderCreated }) => {
       customSleeve: '',
       color: 'Hitam Reaktif',
       unitPrice: 65000,
-      sizes: { S: 0, M: 0, L: 0, XL: 0, XXL: 0 }
+      sizes: { S: 0, M: 0, L: 0, XL: 0, XXL: 0, '3XL': 0, '4XL': 0 }
     }
   ]);
 
@@ -42,7 +42,7 @@ export const OrderFormModal = ({ onClose, onOrderCreated }) => {
         customSleeve: '',
         color: lastItem ? lastItem.color : 'Hitam Reaktif',
         unitPrice: lastItem ? lastItem.unitPrice : 65000,
-        sizes: { S: 0, M: 0, L: 0, XL: 0, XXL: 0 }
+        sizes: { S: 0, M: 0, L: 0, XL: 0, XXL: 0, '3XL': 0, '4XL': 0 }
       }
     ]);
   };
@@ -411,8 +411,8 @@ export const OrderFormModal = ({ onClose, onOrderCreated }) => {
                           <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#e2e8f0' }}>Rincian Jumlah Per Ukuran:</span>
                           <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--primary)' }}>Item Qty: {itemQty} pcs</span>
                         </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.5rem' }}>
-                          {['S', 'M', 'L', 'XL', 'XXL'].map((sz) => (
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '0.4rem' }}>
+                          {['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL'].map((sz) => (
                             <div key={sz} style={{ textAlign: 'center' }}>
                               <label style={{ fontSize: '0.72rem', fontWeight: 700, display: 'block', marginBottom: '0.15rem', color: '#cbd5e1' }}>
                                 Size {sz}
@@ -422,7 +422,7 @@ export const OrderFormModal = ({ onClose, onOrderCreated }) => {
                                 min="0"
                                 className="form-control"
                                 style={{ textAlign: 'center', padding: '0.35rem', fontSize: '0.85rem', fontWeight: 700 }}
-                                value={item.sizes[sz]}
+                                value={item.sizes[sz] || 0}
                                 onChange={(e) => handleItemSizeChange(index, sz, e.target.value)}
                               />
                             </div>

@@ -120,7 +120,7 @@ export const OrderList = ({ isCompletedView, onOpenNewOrder, onOpenInvoice }) =>
                   <th>No. Nota / Tgl</th>
                   <th>Data Pelanggan</th>
                   <th>Detail Orderan & Kain</th>
-                  <th>Ukuran (S/M/L/XL/XXL)</th>
+                  <th>Ukuran (S s/d 4XL)</th>
                   <th>Total Harga</th>
                   <th>DP (Pembayaran)</th>
                   <th>Sisa Tagihan</th>

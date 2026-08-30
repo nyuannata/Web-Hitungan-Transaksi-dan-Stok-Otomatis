@@ -23,10 +23,10 @@ export const Dashboard = ({ onNavigate, onOpenNewOrder, onOpenNewExpense }) => {
   // Initial balance for selected month
   const currentInitialBalance = (data.initialBalances && data.initialBalances[selectedMonth]) || 0;
 
-  // Filter incomes for selected month
+  // Filter incomes for selected month (Original DP + Pelunasan Incomes)
   const monthlyDPIncomes = data.orders
     .filter((o) => o.createdAt && o.createdAt.startsWith(selectedMonth))
-    .reduce((acc, o) => acc + (o.dp || 0), 0);
+    .reduce((acc, o) => acc + (o.initialDp !== undefined ? o.initialDp : (o.dp || 0)), 0);
 
   const monthlyManualIncomes = data.manualIncomes
     .filter((i) => i.date && i.date.startsWith(selectedMonth))
@@ -303,7 +303,7 @@ export const Dashboard = ({ onNavigate, onOpenNewOrder, onOpenNewExpense }) => {
                     </td>
                     <td style={{ fontWeight: 700 }}>{order.quantity} pcs</td>
                     <td>{formatRupiah(order.totalPrice)}</td>
-                    <td style={{ color: '#34d399' }}>{formatRupiah(order.dp)}</td>
+                    <td style={{ color: '#34d399', fontWeight: 600 }}>{formatRupiah(order.paidAmount !== undefined ? order.paidAmount : (order.dp || 0))}</td>
                     <td style={{ color: '#fbbf24', fontWeight: 700 }}>{formatRupiah(order.remaining)}</td>
                     <td>
                       <span

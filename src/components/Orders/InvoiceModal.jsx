@@ -165,8 +165,14 @@ export const InvoiceModal = ({ order, onClose }) => {
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', color: '#059669' }}>
                   <span>Uang Muka / DP:</span>
-                  <strong>{formatRupiah(order.dp)}</strong>
+                  <strong>{formatRupiah(order.initialDp !== undefined ? order.initialDp : (order.dp || 0))}</strong>
                 </div>
+                {order.paidAmount > (order.initialDp !== undefined ? order.initialDp : (order.dp || 0)) && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#059669' }}>
+                    <span>Pelunasan Masuk:</span>
+                    <strong>{formatRupiah(order.paidAmount - (order.initialDp !== undefined ? order.initialDp : (order.dp || 0)))}</strong>
+                  </div>
+                )}
                 <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '2px solid #0f172a', paddingTop: '0.4rem', color: order.remaining === 0 ? '#059669' : '#d97706' }}>
                   <span style={{ fontWeight: 800 }}>Sisa Pembayaran:</span>
                   <strong style={{ fontSize: '1.15rem' }}>{formatRupiah(order.remaining)}</strong>

@@ -300,6 +300,8 @@ export const AppProvider = ({ children }) => {
       unitPrice: normalizedItems[0]?.unitPrice || Number(orderInput.unitPrice) || 0,
       totalPrice,
       dp,
+      initialDp: dp,
+      paidAmount: dp,
       remaining,
       status,
       createdAt: todayStr,
@@ -322,15 +324,19 @@ export const AppProvider = ({ children }) => {
     let targetCustomerName = '';
 
     updateDataState((prev) => {
-      const updatedOrders = prev.orders.map((ord) => {
+      const updatedOrders = (prev.orders || []).map((ord) => {
         if (ord.id === orderId) {
           targetCustomerName = ord.customerName;
-          const newRemaining = Math.max(0, ord.remaining - amount);
-          const newDp = ord.dp + amount;
+          const origInitialDp = ord.initialDp !== undefined ? ord.initialDp : ord.dp;
+          const currentPaid = ord.paidAmount !== undefined ? ord.paidAmount : ord.dp;
+          const newPaidAmount = currentPaid + amount;
+          const newRemaining = Math.max(0, ord.totalPrice - newPaidAmount);
           const newStatus = newRemaining === 0 ? 'Selesai' : 'DP';
           return {
             ...ord,
-            dp: newDp,
+            initialDp: origInitialDp,
+            dp: origInitialDp,
+            paidAmount: newPaidAmount,
             remaining: newRemaining,
             status: newStatus,
             updatedAt: todayStr
@@ -517,7 +523,7 @@ export const AppProvider = ({ children }) => {
     const initialBalance = (data.initialBalances && data.initialBalances[selectedMonth]) || 0;
 
     const totalIncome =
-      monthlyOrders.reduce((acc, o) => acc + (o.dp || 0), 0) +
+      monthlyOrders.reduce((acc, o) => acc + (o.initialDp !== undefined ? o.initialDp : (o.dp || 0)), 0) +
       monthlyManualIncomes.reduce((acc, i) => acc + (i.amount || 0), 0);
     const totalExpense = monthlyExpenses.reduce((acc, e) => acc + (e.amount || 0), 0);
     const netProfit = totalIncome - totalExpense;
@@ -533,7 +539,7 @@ export const AppProvider = ({ children }) => {
 
     // Section 2: Orderan Masuk & Transaksi
     csvContent += `DAFTAR ORDERAN DAN TRANSAKSI PELANGGAN\n`;
-    csvContent += `ID Order,Tanggal,Nama Pelanggan,No Telp/WA,Alamat,Judul Orderan,Merek Kain,Lengan,Warna,Ukuran (S/M/L/XL/XXL),Jumlah (Pcs),Total Harga,DP Masuk,Sisa Pembayaran,Status\n`;
+    csvContent += `ID Order,Tanggal,Nama Pelanggan,No Telp/WA,Alamat,Judul Orderan,Merek Kain,Lengan,Warna,Ukuran (S/M/L/XL/XXL),Jumlah (Pcs),Total Harga,Total Terbayar,Sisa Pembayaran,Status\n`;
     
     if (data.orders.length === 0) {
       csvContent += `Belum ada orderan tercatat.\n`;
@@ -557,7 +563,8 @@ export const AppProvider = ({ children }) => {
           detailTitle += ` (${itemsDetail})`;
         }
 
-        csvContent += `"${o.id}","${o.createdAt || ''}","${o.customerName || ''}","${o.customerPhone || ''}","${(o.customerAddress || '').replace(/"/g, '""')}","${detailTitle.replace(/"/g, '""')}","${o.fabricBrand || ''}","${o.sleeveType || ''}","${o.color || ''}","${sizesStr}","${o.quantity || 0}","Rp ${(o.totalPrice || 0).toLocaleString('id-ID')}","Rp ${(o.dp || 0).toLocaleString('id-ID')}","Rp ${(o.remaining || 0).toLocaleString('id-ID')}","${o.status || ''}"\n`;
+        const paid = o.paidAmount !== undefined ? o.paidAmount : (o.dp || 0);
+        csvContent += `"${o.id}","${o.createdAt || ''}","${o.customerName || ''}","${o.customerPhone || ''}","${(o.customerAddress || '').replace(/"/g, '""')}","${detailTitle.replace(/"/g, '""')}","${o.fabricBrand || ''}","${o.sleeveType || ''}","${o.color || ''}","${sizesStr}","${o.quantity || 0}","Rp ${(o.totalPrice || 0).toLocaleString('id-ID')}","Rp ${paid.toLocaleString('id-ID')}","Rp ${(o.remaining || 0).toLocaleString('id-ID')}","${o.status || ''}"\n`;
       });
     }
     csvContent += `\n`;

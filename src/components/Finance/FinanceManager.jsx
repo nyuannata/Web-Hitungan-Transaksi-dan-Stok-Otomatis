@@ -39,15 +39,16 @@ export const FinanceManager = ({ defaultExpenseModalOpen }) => {
     (i) => i.date && i.date.startsWith(selectedMonth)
   );
 
-  // Auto incomes derived from Order DP & Pelunasan
+  // Auto incomes derived from Order DP (Original down payment at creation)
   const orderIncomes = [];
   data.orders.forEach((ord) => {
-    if (ord.createdAt && ord.createdAt.startsWith(selectedMonth) && ord.dp > 0) {
+    const dpAmount = ord.initialDp !== undefined ? ord.initialDp : (ord.dp || 0);
+    if (ord.createdAt && ord.createdAt.startsWith(selectedMonth) && dpAmount > 0) {
       orderIncomes.push({
         id: `INC-DP-${ord.id}`,
         date: ord.createdAt,
-        category: 'DP / Pembayaran Order',
-        amount: ord.dp,
+        category: 'DP / Pembayaran Awal',
+        amount: dpAmount,
         description: `DP Order #${ord.id} - ${ord.customerName} (${ord.orderTitle})`,
         isAutoOrder: true
       });

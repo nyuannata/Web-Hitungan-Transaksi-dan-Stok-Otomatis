@@ -173,11 +173,18 @@ export const OrderList = ({ isCompletedView, onOpenNewOrder, onOpenInvoice }) =>
                         <div style={{ fontWeight: 700, color: 'var(--primary)' }}>{order.quantity} pcs</div>
                         <div style={{ fontSize: '0.725rem', color: 'var(--text-muted)' }}>{sizesStr}</div>
                       </td>
-                      <td style={{ fontWeight: 600 }}>{formatRupiah(order.totalPrice)}</td>
-                      <td style={{ color: '#34d399', fontWeight: 600 }}>{formatRupiah(order.dp)}</td>
-                      <td style={{ color: order.remaining > 0 ? '#fbbf24' : '#94a3b8', fontWeight: 700 }}>
-                        {formatRupiah(order.remaining)}
-                      </td>
+                  <td style={{ fontWeight: 600 }}>{formatRupiah(order.totalPrice)}</td>
+                  <td style={{ color: '#34d399', fontWeight: 600 }}>
+                    {formatRupiah(order.paidAmount !== undefined ? order.paidAmount : (order.dp || 0))}
+                    {order.paidAmount > (order.initialDp || 0) && (
+                      <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                        (DP: {formatRupiah(order.initialDp)})
+                      </div>
+                    )}
+                  </td>
+                  <td style={{ color: order.remaining > 0 ? '#fbbf24' : '#94a3b8', fontWeight: 700 }}>
+                    {formatRupiah(order.remaining)}
+                  </td>
                       <td>
                         <span
                           className={`badge ${
